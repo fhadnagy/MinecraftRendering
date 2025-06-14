@@ -1,10 +1,11 @@
 #include "Chunk.h"
+#include <iostream>
 
 MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, uint8_t textureCoord) {
 	MeshObject<Vertex> mesh;
 	glm::vec3 normal;
 	glm::vec3 offsets[4];
-	glm::vec3 center = relativePoint + glm::vec3(-0.5, 0.5, 0.5);
+	glm::vec3 center = relativePoint + glm::vec3(0.5, 0.5, 0.5);
 	// Texture UV top-left
 	float u = (textureCoord % 16) * TW;
 	float v = (textureCoord / 16) * TW;
@@ -75,8 +76,21 @@ MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, u
 
 
 Chunk::Chunk(int sizeXZ, int height)
-    : width(sizeXZ), depth(sizeXZ), height(height) {
-    blocks.resize(width * height * depth, 0); // Empty by default
+    : width(sizeXZ), height(height) {
+	blocks = new uint8_t[sizeXZ*sizeXZ*height]; // Empty by default
+	for (int y = 0; y < height; ++y) {
+		for (int z = 0; z < width; ++z) {
+			for (int x = 0; x < width; ++x) {
+				int index = x + y * width + z * width * height;
+				blocks[index] = 0;
+			}
+		}
+	}
+}
+
+Chunk::~Chunk()
+{
+	delete blocks;
 }
 
 void Chunk::GenerateMeshes() {
@@ -84,11 +98,11 @@ void Chunk::GenerateMeshes() {
     indices.clear();
 
     for (int y = 0; y < height; ++y) {
-        for (int z = 0; z < depth; ++z) {
+        for (int z = 0; z < width; ++z) {
             for (int x = 0; x < width; ++x) {
                 int index = x + y * width + z * width * height;
                 uint8_t block = blocks[index];
-                if (block == 0) continue; // Air
+                //if (block == 0) continue; // Air
 
                 glm::vec3 center = glm::vec3(x, y, z);
 
@@ -100,6 +114,36 @@ void Chunk::GenerateMeshes() {
         }
     }
 }
+
+bool Chunk::SetBlock(int x, int y, int z, uint8_t value)
+{
+	if (x < 0 || x >= width ||
+		y < 0 || y >= height ||
+		z < 0 || z >= width)
+	{
+		return false; // Out of bounds
+	}
+
+	int index = x + y * width + z * width * height;
+	blocks[index] = value;
+	return true;
+}
+
+OGLObject Chunk::GetOGLObject()
+{
+	GenerateMeshes();
+	const std::initializer_list<VertexAttributeDescriptor> vertexAttribList =
+	{
+		{ 0, offsetof(Vertex, position), 3, GL_FLOAT },
+		{ 1, offsetof(Vertex, normal),	 3, GL_FLOAT },
+		{ 2, offsetof(Vertex, texcoord), 2, GL_FLOAT },
+	};
+	MeshObject<Vertex> mesh;
+	mesh.indexArray = indices;
+	mesh.vertexArray = vertices;
+	return CreateGLObjectFromMesh(mesh, vertexAttribList);
+}
+
 
 
 void Chunk::AddFace(FaceDirection face, glm::vec3 center, uint8_t textureCoord) {

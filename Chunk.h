@@ -17,22 +17,25 @@ MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, u
 class Chunk {
 public:
     Chunk(int width, int height);
+    ~Chunk();
 
     void GenerateMeshes();
 
     int GetWidth() const { return width; }
     int GetHeight() const { return height; }
-    int GetDepth() const { return depth; }
+    bool SetBlock(int x, int y, int z, uint8_t value);
+    OGLObject GetOGLObject();
 
 private:
-    int width, height, depth;
+    int width, height;
 
-    // Optional: 3D voxel data
-    std::vector<uint8_t> blocks;
+    uint8_t* blocks;
 
     // You can store mesh data here
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+
+    
 
     void AddFace(FaceDirection face, glm::vec3 center, uint8_t textureCoord);
 };

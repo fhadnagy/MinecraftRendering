@@ -16,6 +16,7 @@
 #include "GLUtils.hpp"
 #include "Camera.h"
 #include "CameraManipulator.h"
+#include "Chunk.h"
 
 
 struct SUpdateInfo
@@ -86,6 +87,9 @@ protected:
 	// Geometry variables
 	OGLObject m_Suzanne = {};
 	OGLObject m_cube = {};
+	OGLObject m_chunk = {};
+	
+	Chunk* chunk;
 
 	// Geometry initialization and termination
 	void InitGeometry();

@@ -6,14 +6,15 @@
 
 #include <imgui.h>
 #include <iostream>
-#include "Chunk.h"
 
 CMyApp::CMyApp()
 {
+	chunk = new Chunk(10, 20);
 }
 
 CMyApp::~CMyApp()
 {
+	delete chunk;
 }
 
 
@@ -141,6 +142,11 @@ void CMyApp::InitGeometry()
 	MeshObject<Vertex> suzanneMeshCPU = ObjParser::parse("Assets/Suzanne.obj");
 	m_Suzanne = CreateGLObjectFromMesh(suzanneMeshCPU, vertexAttribList);
 	m_cube = CreateGLObjectFromMesh(createCubeFace(FaceDirection::Front, glm::vec3(0),78), vertexAttribList);
+	chunk->SetBlock(0, 19, 0, 1);
+	chunk->SetBlock(0, 0, 0, 250);
+	chunk->SetBlock(0, 19, 9, 2);
+	chunk->SetBlock(9,19,9,3);
+	m_chunk = chunk->GetOGLObject();
 }
 
 
@@ -264,6 +270,7 @@ void CMyApp::Clean()
 	CleanTextures();
 	CleanResolutionDependentResources();
 	CleanFrameBufferObject();
+
 }
 
 void CMyApp::Update(const SUpdateInfo& updateInfo)
@@ -288,7 +295,7 @@ void CMyApp::RenderGeometry()
 
 	glUniformMatrix4fv(ul("viewProj"), 1, GL_FALSE, glm::value_ptr(m_camera.GetViewProj()));
 	
-	DrawObject(m_cube,glm::translate(glm::vec3(1.0,0.0,0.0)));
+	DrawObject(m_chunk,glm::translate(glm::vec3(0.0,0.0,0.0)));
 }
 
 void CMyApp::DrawAxes()
