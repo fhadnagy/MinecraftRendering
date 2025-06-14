@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="15.0">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="includes\GLUtils.cpp" />
@@ -90,8 +91,10 @@
     <ClCompile Include="includes\CameraManipulator.cpp" />
     <ClCompile Include="includes\ObjParser.cpp" />
     <ClCompile Include="includes\ProgramBuilder.cpp" />
-    </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="includes\GLUtils.hpp" />
     <ClInclude Include="includes\SDL_GLDebugMessageCallback.h" />
@@ -99,21 +102,22 @@
     <ClInclude Include="includes\CameraManipulator.h" />
     <ClInclude Include="includes\ObjParser.h" />
     <ClInclude Include="includes\ProgramBuilder.h" />
-    </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\BasicFrag.frag" />
     <None Include="Shaders\Vert_PosNormTex.vert" />
     <None Include="Shaders\Vert_FullScreen.vert" />
     <None Include="Shaders\Frag_Postprocess.frag" />
     <None Include="Shaders\Vert_axes.vert" />
     <None Include="Shaders\Frag_Lighting.frag" />
     <None Include="Shaders\Frag_PosCol.frag" />
-    </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Suzanne.obj" />
-    </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\metal.png" />
-    </ItemGroup>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

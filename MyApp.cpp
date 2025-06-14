@@ -14,6 +14,15 @@ CMyApp::~CMyApp()
 {
 }
 
+enum class FaceDirection {
+	Front,
+	Back,
+	Left,
+	Right,
+	Top,
+	Bottom
+};
+
 void CMyApp::SetupDebugCallback()
 {
 	// Enable and set the debug callback function if we are in debug context
@@ -33,7 +42,7 @@ void CMyApp::InitShaders()
 	m_programID = glCreateProgram();
 	ProgramBuilder{ m_programID }
 		.ShaderStage(GL_VERTEX_SHADER, "Shaders/Vert_PosNormTex.vert")
-		.ShaderStage(GL_FRAGMENT_SHADER, "Shaders/Frag_Lighting.frag")
+		.ShaderStage(GL_FRAGMENT_SHADER, "Shaders/BasicFrag.frag")
 		.Link();
 	
 	m_programPostprocessID = glCreateProgram();
@@ -72,10 +81,10 @@ MeshObject<Vertex> createCube()
 
 	mesh.vertexArray = {
 		// Front face
-		{{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // Bottom-left
+		{{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.5f, 0.0f}}, // Bottom-left
 		{{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},  // Bottom-right
-		{{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},   // Top-right
-		{{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},  // Top-left
+		{{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.5f}},   // Top-right
+		{{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.5f, 0.5f}},  // Top-left
 
 		// Back face
 		{{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}}, // Bottom-left
@@ -124,6 +133,79 @@ MeshObject<Vertex> createCube()
 	return mesh;
 }
 
+MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, uint8_t textureCoord) {
+	MeshObject<Vertex> mesh;
+	glm::vec3 normal;
+	glm::vec3 offsets[4];
+	glm::vec3 center = relativePoint + glm::vec3(-0.5, 0.5, 0.5);
+	// Texture UV top-left
+	float u = (textureCoord % 16) * TW;
+	float v = (textureCoord / 16) * TW;
+
+	glm::vec2 uv0 = { u, v };
+	glm::vec2 uv1 = { u + TW, v };
+	glm::vec2 uv2 = { u + TW, v + TW };
+	glm::vec2 uv3 = { u, v + TW };
+
+	float h = 1.0 / 2.0f;
+
+	switch (face) {
+	case FaceDirection::Front:
+		normal = { 0, 0, 1 };
+		offsets[0] = { -h, -h, h };
+		offsets[1] = { h, -h, h };
+		offsets[2] = { h,  h, h };
+		offsets[3] = { -h,  h, h };
+		break;
+	case FaceDirection::Back:
+		normal = { 0, 0, -1 };
+		offsets[0] = { h, -h, -h };
+		offsets[1] = { -h, -h, -h };
+		offsets[2] = { -h,  h, -h };
+		offsets[3] = { h,  h, -h };
+		break;
+	case FaceDirection::Left:
+		normal = { -1, 0, 0 };
+		offsets[0] = { -h, -h, -h };
+		offsets[1] = { -h, -h,  h };
+		offsets[2] = { -h,  h,  h };
+		offsets[3] = { -h,  h, -h };
+		break;
+	case FaceDirection::Right:
+		normal = { 1, 0, 0 };
+		offsets[0] = { h, -h,  h };
+		offsets[1] = { h, -h, -h };
+		offsets[2] = { h,  h, -h };
+		offsets[3] = { h,  h,  h };
+		break;
+	case FaceDirection::Top:
+		normal = { 0, 1, 0 };
+		offsets[0] = { -h, h,  h };
+		offsets[1] = { h, h,  h };
+		offsets[2] = { h, h, -h };
+		offsets[3] = { -h, h, -h };
+		break;
+	case FaceDirection::Bottom:
+		normal = { 0, -1, 0 };
+		offsets[0] = { -h, -h, -h };
+		offsets[1] = { h, -h, -h };
+		offsets[2] = { h, -h,  h };
+		offsets[3] = { -h, -h,  h };
+		break;
+	}
+
+	mesh.vertexArray = {
+		{center + offsets[0], normal, uv0},
+		{center + offsets[1], normal, uv1},
+		{center + offsets[2], normal, uv2},
+		{center + offsets[3], normal, uv3},
+	};
+
+	mesh.indexArray = { 0, 1, 2, 2, 3, 0 };
+
+	return mesh;
+}
+
 void CMyApp::InitGeometry()
 {
 	const std::initializer_list<VertexAttributeDescriptor> vertexAttribList =
@@ -136,15 +218,10 @@ void CMyApp::InitGeometry()
 	// Suzanne
 	MeshObject<Vertex> suzanneMeshCPU = ObjParser::parse("Assets/Suzanne.obj");
 	m_Suzanne = CreateGLObjectFromMesh(suzanneMeshCPU, vertexAttribList);
-	m_cube = CreateGLObjectFromMesh(createCube(), vertexAttribList);
+	m_cube = CreateGLObjectFromMesh(createCubeFace(FaceDirection::Front, glm::vec3(0),78), vertexAttribList);
 }
 
-void CMyApp::DrawObject(OGLObject& obj, const glm::mat4& world) {
-	glProgramUniformMatrix4fv(m_programID, ul(m_programID, "world"), 1, GL_FALSE, glm::value_ptr(world));
-	glProgramUniformMatrix4fv(m_programID, ul(m_programID, "worldIT"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(world))));
-	glBindVertexArray(obj.vaoID);
-	glDrawElements(GL_TRIANGLES, obj.count, GL_UNSIGNED_INT, nullptr);
-}
+
 
 
 void CMyApp::CleanGeometry()
@@ -243,8 +320,8 @@ bool CMyApp::Init()
 
 	// Other
 
-	//glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
-	//glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
+	glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
+	glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
 	glEnable(GL_DEPTH_TEST); // Enable depth testing. (for overlapping geometry)
 
 	// Camera
@@ -273,6 +350,13 @@ void CMyApp::Update(const SUpdateInfo& updateInfo)
     m_ElapsedTimeInSec = updateInfo.ElapsedTimeInSec;
 }
 
+void CMyApp::DrawObject(OGLObject& obj, const glm::mat4& world) {
+	glUniformMatrix4fv(ul("world"), 1, GL_FALSE, glm::value_ptr(world));
+	glUniformMatrix4fv(ul("worldInvTransp"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(world))));
+	glBindVertexArray(obj.vaoID);
+	glDrawElements(GL_TRIANGLES, obj.count, GL_UNSIGNED_INT, nullptr);
+}
+
 void CMyApp::RenderGeometry()
 {
 	glUseProgram(m_programID);
@@ -281,20 +365,8 @@ void CMyApp::RenderGeometry()
 	glBindSampler( 0, m_SamplerID );
 
 	glUniformMatrix4fv(ul("viewProj"), 1, GL_FALSE, glm::value_ptr(m_camera.GetViewProj()));
-	glUniform4fv(ul("lightPosition"), 1, glm::value_ptr(m_lightPosition));
-	glUniform3fv(ul("La"), 1, glm::value_ptr(m_La));
-	glUniform3fv(ul("Ld"), 1, glm::value_ptr(m_Ld));
-	glUniform3fv(ul("Ls"), 1, glm::value_ptr(m_Ls));
-
 	
-	glBindVertexArray(m_Suzanne.vaoID);
-
-	const glm::mat4& suzanneWorld = glm::mat4(1);
-	glUniformMatrix4fv(ul("world"), 1, GL_FALSE, glm::value_ptr(suzanneWorld));
-	glUniformMatrix4fv(ul("worldInvTransp"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(suzanneWorld))));
-	glDrawElements(GL_TRIANGLES, m_Suzanne.count, GL_UNSIGNED_INT, 0);
-	
-	DrawObject(m_cube,glm::translate(glm::vec3(10.0,0.0,0.0)));
+	DrawObject(m_cube,glm::translate(glm::vec3(1.0,0.0,0.0)));
 }
 
 void CMyApp::DrawAxes()
@@ -362,13 +434,37 @@ void CMyApp::Render()
 void CMyApp::RenderGUI()
 {
 	// ImGui DemoWindow
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
-	ImGui::SetNextWindowSize(ImVec2(455, 60), ImGuiCond_FirstUseEver);
-	if (ImGui::Begin("Filter control"))
-	{
-		ImGui::SliderFloat("Filter weight", &m_filterWeight, 0.0f, 1.0f);
-		ImGui::End();
+	//ImGui::SetNextWindowSize(ImVec2(455, 60), ImGuiCond_FirstUseEver);
+	static int selectedFace = 0;
+	static int textureIndex = 0;
+	static OGLObject ogl;
+	static bool initialized = false;
+
+	bool needsUpdate = false;
+
+	const char* faceNames[] = { "Front", "Back", "Left", "Right", "Top", "Bottom" };
+	if (ImGui::Combo("Face", &selectedFace, faceNames, IM_ARRAYSIZE(faceNames))) {
+		needsUpdate = true;
+	}
+
+	if (ImGui::SliderInt("Texture Coord", &textureIndex, 0, 255)) {
+		needsUpdate = true;
+	}
+
+	if (!initialized || needsUpdate) {
+		FaceDirection face = static_cast<FaceDirection>(selectedFace);
+		uint8_t tex = static_cast<uint8_t>(textureIndex);
+		auto mesh = createCubeFace(face, { 0,0,0}, tex);
+		const std::initializer_list<VertexAttributeDescriptor> vertexAttribList =
+		{
+			{ 0, offsetof(Vertex, position), 3, GL_FLOAT },
+			{ 1, offsetof(Vertex, normal),	 3, GL_FLOAT },
+			{ 2, offsetof(Vertex, texcoord), 2, GL_FLOAT },
+		};
+		CleanOGLObject(m_cube);
+		m_cube = CreateGLObjectFromMesh(mesh, vertexAttribList);
 	}
 }
 
