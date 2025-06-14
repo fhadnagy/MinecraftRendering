@@ -6,6 +6,8 @@
 
 #include <imgui.h>
 #include <iostream>
+#include "Chunk.h"
+
 CMyApp::CMyApp()
 {
 }
@@ -14,14 +16,6 @@ CMyApp::~CMyApp()
 {
 }
 
-enum class FaceDirection {
-	Front,
-	Back,
-	Left,
-	Right,
-	Top,
-	Bottom
-};
 
 void CMyApp::SetupDebugCallback()
 {
@@ -133,78 +127,6 @@ MeshObject<Vertex> createCube()
 	return mesh;
 }
 
-MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, uint8_t textureCoord) {
-	MeshObject<Vertex> mesh;
-	glm::vec3 normal;
-	glm::vec3 offsets[4];
-	glm::vec3 center = relativePoint + glm::vec3(-0.5, 0.5, 0.5);
-	// Texture UV top-left
-	float u = (textureCoord % 16) * TW;
-	float v = (textureCoord / 16) * TW;
-
-	glm::vec2 uv0 = { u, v };
-	glm::vec2 uv1 = { u + TW, v };
-	glm::vec2 uv2 = { u + TW, v + TW };
-	glm::vec2 uv3 = { u, v + TW };
-
-	float h = 1.0 / 2.0f;
-
-	switch (face) {
-	case FaceDirection::Front:
-		normal = { 0, 0, 1 };
-		offsets[0] = { -h, -h, h };
-		offsets[1] = { h, -h, h };
-		offsets[2] = { h,  h, h };
-		offsets[3] = { -h,  h, h };
-		break;
-	case FaceDirection::Back:
-		normal = { 0, 0, -1 };
-		offsets[0] = { h, -h, -h };
-		offsets[1] = { -h, -h, -h };
-		offsets[2] = { -h,  h, -h };
-		offsets[3] = { h,  h, -h };
-		break;
-	case FaceDirection::Left:
-		normal = { -1, 0, 0 };
-		offsets[0] = { -h, -h, -h };
-		offsets[1] = { -h, -h,  h };
-		offsets[2] = { -h,  h,  h };
-		offsets[3] = { -h,  h, -h };
-		break;
-	case FaceDirection::Right:
-		normal = { 1, 0, 0 };
-		offsets[0] = { h, -h,  h };
-		offsets[1] = { h, -h, -h };
-		offsets[2] = { h,  h, -h };
-		offsets[3] = { h,  h,  h };
-		break;
-	case FaceDirection::Top:
-		normal = { 0, 1, 0 };
-		offsets[0] = { -h, h,  h };
-		offsets[1] = { h, h,  h };
-		offsets[2] = { h, h, -h };
-		offsets[3] = { -h, h, -h };
-		break;
-	case FaceDirection::Bottom:
-		normal = { 0, -1, 0 };
-		offsets[0] = { -h, -h, -h };
-		offsets[1] = { h, -h, -h };
-		offsets[2] = { h, -h,  h };
-		offsets[3] = { -h, -h,  h };
-		break;
-	}
-
-	mesh.vertexArray = {
-		{center + offsets[0], normal, uv0},
-		{center + offsets[1], normal, uv1},
-		{center + offsets[2], normal, uv2},
-		{center + offsets[3], normal, uv3},
-	};
-
-	mesh.indexArray = { 0, 1, 2, 2, 3, 0 };
-
-	return mesh;
-}
 
 void CMyApp::InitGeometry()
 {

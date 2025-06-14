@@ -17,7 +17,6 @@
 #include "Camera.h"
 #include "CameraManipulator.h"
 
-#define TW 0.0625
 
 struct SUpdateInfo
 {
