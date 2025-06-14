@@ -35,7 +35,7 @@ void CMyApp::InitShaders()
 		.ShaderStage(GL_VERTEX_SHADER, "Shaders/Vert_PosNormTex.vert")
 		.ShaderStage(GL_FRAGMENT_SHADER, "Shaders/Frag_Lighting.frag")
 		.Link();
-
+	
 	m_programPostprocessID = glCreateProgram();
 	ProgramBuilder{ m_programPostprocessID }
 		.ShaderStage(GL_VERTEX_SHADER, "Shaders/Vert_FullScreen.vert")
@@ -66,6 +66,64 @@ void CMyApp::CleanAxesShader()
 	glDeleteProgram(m_programAxesID);
 }
 
+MeshObject<Vertex> createCube()
+{
+	MeshObject<Vertex> mesh;
+
+	mesh.vertexArray = {
+		// Front face
+		{{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // Bottom-left
+		{{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},  // Bottom-right
+		{{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},   // Top-right
+		{{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},  // Top-left
+
+		// Back face
+		{{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}}, // Bottom-left
+		{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},// Bottom-right
+		{{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}}, // Top-right
+		{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},  // Top-left
+
+		// Left face
+		{{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // Bottom-left
+		{{-0.5f, -0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // Bottom-right
+		{{-0.5f, 0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},  // Top-right
+		{{-0.5f, 0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}}, // Top-left
+
+		// Right face
+		{{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},  // Bottom-left
+		{{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // Bottom-right
+		{{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},  // Top-right
+		{{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},   // Top-left
+
+		// Top face
+		{{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},  // Bottom-left
+		{{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},   // Bottom-right
+		{{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},  // Top-right
+		{{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}}, // Top-left
+
+		// Bottom face
+		{{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}}, // Bottom-left
+		{{0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}}, // Bottom-right
+		{{0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},  // Top-right
+		{{-0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}}, // Top-left
+	};
+
+	mesh.indexArray = {// Front face
+					   0, 1, 2, 2, 3, 0,
+					   // Back face
+					   4, 5, 6, 6, 7, 4,
+					   // Left face
+					   8, 9, 10, 10, 11, 8,
+					   // Right face
+					   12, 13, 14, 14, 15, 12,
+					   // Top face
+					   16, 17, 18, 18, 19, 16,
+					   // Bottom face
+					   20, 21, 22, 22, 23, 20 };
+
+	return mesh;
+}
+
 void CMyApp::InitGeometry()
 {
 	const std::initializer_list<VertexAttributeDescriptor> vertexAttribList =
@@ -78,7 +136,16 @@ void CMyApp::InitGeometry()
 	// Suzanne
 	MeshObject<Vertex> suzanneMeshCPU = ObjParser::parse("Assets/Suzanne.obj");
 	m_Suzanne = CreateGLObjectFromMesh(suzanneMeshCPU, vertexAttribList);
+	m_cube = CreateGLObjectFromMesh(createCube(), vertexAttribList);
 }
+
+void CMyApp::DrawObject(OGLObject& obj, const glm::mat4& world) {
+	glProgramUniformMatrix4fv(m_programID, ul(m_programID, "world"), 1, GL_FALSE, glm::value_ptr(world));
+	glProgramUniformMatrix4fv(m_programID, ul(m_programID, "worldIT"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(world))));
+	glBindVertexArray(obj.vaoID);
+	glDrawElements(GL_TRIANGLES, obj.count, GL_UNSIGNED_INT, nullptr);
+}
+
 
 void CMyApp::CleanGeometry()
 {
@@ -90,10 +157,10 @@ void CMyApp::InitTextures()
 	glCreateSamplers( 1, &m_SamplerID );
 	glSamplerParameteri( m_SamplerID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 	glSamplerParameteri( m_SamplerID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-	glSamplerParameteri( m_SamplerID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-	glSamplerParameteri( m_SamplerID, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glSamplerParameteri( m_SamplerID, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	glSamplerParameteri( m_SamplerID, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-	ImageRGBA metalImage = ImageFromFile( "Assets/metal.png" );
+	ImageRGBA metalImage = ImageFromFile( "Assets/textures.png" );
 
 	glCreateTextures( GL_TEXTURE_2D, 1, &m_metalTextureID );
 	glTextureStorage2D( m_metalTextureID, NumberOfMIPLevels( metalImage ), GL_RGBA8, metalImage.width, metalImage.height );
@@ -176,8 +243,8 @@ bool CMyApp::Init()
 
 	// Other
 
-	glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
-	glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
+	//glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
+	//glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
 	glEnable(GL_DEPTH_TEST); // Enable depth testing. (for overlapping geometry)
 
 	// Camera
@@ -204,15 +271,6 @@ void CMyApp::Update(const SUpdateInfo& updateInfo)
 {
 	m_cameraManipulator.Update(updateInfo.DeltaTimeInSec);
     m_ElapsedTimeInSec = updateInfo.ElapsedTimeInSec;
-
-	// World transform of the suzannes
-	glm::mat4* suzanneWorldTransform = m_suzanneWorldTransform;
-	for (int i = -1; i <= 1; ++i)
-		for ( int j = -1; j <= 1; ++j, suzanneWorldTransform++ )
-		{
-			*suzanneWorldTransform = glm::translate( glm::vec3( ( 4 * i ), ( 4 * ( j + 1 ) ), sinf( m_ElapsedTimeInSec * 2.f * glm::pi<float>() * ( i * j ) ) ) );
-		}
-
 }
 
 void CMyApp::RenderGeometry()
@@ -228,16 +286,15 @@ void CMyApp::RenderGeometry()
 	glUniform3fv(ul("Ld"), 1, glm::value_ptr(m_Ld));
 	glUniform3fv(ul("Ls"), 1, glm::value_ptr(m_Ls));
 
+	
 	glBindVertexArray(m_Suzanne.vaoID);
 
-	// Suzannes
-    for ( int i = 0; i < countof( m_suzanneWorldTransform ); ++i )
-    {
-        const glm::mat4& suzanneWorld = m_suzanneWorldTransform[ i ];
-        glUniformMatrix4fv( ul( "world" ), 1, GL_FALSE, glm::value_ptr( suzanneWorld ) );
-        glUniformMatrix4fv( ul( "worldInvTransp" ), 1, GL_FALSE, glm::value_ptr( glm::transpose( glm::inverse( suzanneWorld ) ) ) );
-        glDrawElements( GL_TRIANGLES, m_Suzanne.count, GL_UNSIGNED_INT, 0 );
-    }
+	const glm::mat4& suzanneWorld = glm::mat4(1);
+	glUniformMatrix4fv(ul("world"), 1, GL_FALSE, glm::value_ptr(suzanneWorld));
+	glUniformMatrix4fv(ul("worldInvTransp"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(suzanneWorld))));
+	glDrawElements(GL_TRIANGLES, m_Suzanne.count, GL_UNSIGNED_INT, 0);
+	
+	DrawObject(m_cube,glm::translate(glm::vec3(10.0,0.0,0.0)));
 }
 
 void CMyApp::DrawAxes()
@@ -256,6 +313,19 @@ void CMyApp::DrawAxes()
 
 void CMyApp::Render()
 {
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	RenderGeometry();
+	
+	DrawAxes();
+}
+
+/*
+void CMyApp::Render()
+{
+
 	// Render framebuffer
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferID);
@@ -287,6 +357,7 @@ void CMyApp::Render()
 
 	DrawAxes();
 }
+*/
 
 void CMyApp::RenderGUI()
 {

@@ -130,6 +130,6 @@ void main()
 	vec3 shadedColor = lighting(light, worldPosition, normal, material);
 	outputColor = vec4(shadedColor, 1) * texture(textureImage, textureCoords);
 
-	// normal vector debug:
-	// outputColor = vec4( normal * 0.5 + 0.5, 1.0 );
+	 //normal vector debug:
+	 //outputColor = vec4( normal * 0.5 + 0.5, 1.0 );
 }

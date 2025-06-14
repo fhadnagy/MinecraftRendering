@@ -17,6 +17,8 @@
 #include "Camera.h"
 #include "CameraManipulator.h"
 
+#define TW 0.0625
+
 struct SUpdateInfo
 {
 	float ElapsedTimeInSec = 0.0f;	// Elapsed time since start of the program
@@ -73,16 +75,18 @@ protected:
 	glm::vec4 m_lightPosition = glm::vec4(0.0,1.5,0.0,1.0);
 	glm::vec3 m_La = glm::vec3(0.0, 0.0, 0.0);	// Ambient
 	glm::vec3 m_Ld = glm::vec3(1.0, 1.0, 1.0);	// Diffuse
-	glm::vec3 m_Ls = glm::vec3(0.0);  	        // Specular (OFF)
+	glm::vec3 m_Ls = glm::vec3(0.5);  	        // Specular (OFF)
 
 	// Shader initialization and termination
 	void InitShaders();
 	void CleanShaders();
 	void InitAxesShader();
 	void CleanAxesShader();
+	void DrawObject(OGLObject& obj, const glm::mat4& world);
 
 	// Geometry variables
 	OGLObject m_Suzanne = {};
+	OGLObject m_cube = {};
 
 	// Geometry initialization and termination
 	void InitGeometry();
