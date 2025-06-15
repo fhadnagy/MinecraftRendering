@@ -16,7 +16,7 @@
 #include "GLUtils.hpp"
 #include "Camera.h"
 #include "CameraManipulator.h"
-#include "Chunk.h"
+#include "ChunkManager.h"
 
 
 struct SUpdateInfo

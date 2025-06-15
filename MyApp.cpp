@@ -9,7 +9,7 @@
 
 CMyApp::CMyApp()
 {
-	chunk = new Chunk(10, 20);
+	chunk = new Chunk(10, 20,nullptr, 0,0);
 }
 
 CMyApp::~CMyApp()
@@ -146,6 +146,7 @@ void CMyApp::InitGeometry()
 	chunk->SetBlock(0, 0, 0, 250);
 	chunk->SetBlock(0, 19, 9, 2);
 	chunk->SetBlock(9,19,9,3);
+	chunk->UpadteOGLObject();
 	m_chunk = chunk->GetOGLObject();
 }
 

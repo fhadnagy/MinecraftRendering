@@ -1,4 +1,4 @@
-#include "Chunk.h"
+#include "ChunkManager.h"
 #include <iostream>
 
 MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, uint8_t textureCoord) {
@@ -75,6 +75,19 @@ MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, u
 }
 
 
+
+glm::ivec3 GetFaceOffset(FaceDirection face) {
+	switch (face) {
+	case FaceDirection::Front: return { 0, 1, 0 };
+	case FaceDirection::Back: return { 0, -1, 0 };
+	case FaceDirection::Left: return { -1, 0, 0 };
+	case FaceDirection::Right: return { 1, 0, 0 };
+	case FaceDirection::Top: return { 0, 0, 1 };
+	case FaceDirection::Bottom: return { 0, 0, -1 };
+	}
+	return { 0, 0, 0 }; // Default/fallback
+}
+
 Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int startY)
 	: width(sizeXZ), height(height), startX(startX), startY(startY), manager(manager) {
 	blocks = new uint8_t[sizeXZ * sizeXZ * height]; 
@@ -89,12 +102,20 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 	}
 }
 
+Chunk::Chunk() : width(1), height(1), startX(0), startY(0), manager(nullptr) {
+	blocks = new uint8_t[1];
+	blocks[0] = 1;
+}
+
 Chunk::~Chunk()
 {
 	delete blocks;
 }
 
 void Chunk::GenerateMeshes() {
+	if (!needsRender)
+		return;
+
     vertices.clear();
     indices.clear();
 
@@ -109,11 +130,16 @@ void Chunk::GenerateMeshes() {
 
                 // For now, always show all faces
                 for (int f = 0; f < 6; ++f) {
-                    AddFace(static_cast<FaceDirection>(f), center, block);
+					glm::ivec3 offset = GetFaceOffset(static_cast<FaceDirection>(f));
+					if (IsAir(startX + x + offset.x, startY + y + offset.y, z + offset.z)) {
+						AddFace(static_cast<FaceDirection>(f), center, block);
+					}
                 }
             }
         }
     }
+
+	needsRender = false;
 }
 
 bool Chunk::SetBlock(int x, int y, int z, uint8_t value)
@@ -123,8 +149,14 @@ bool Chunk::SetBlock(int x, int y, int z, uint8_t value)
 	}
 
 	int index = x + y * width + z * width * height;
-	blocks[index] = value;
-	return true;
+	if (blocks[index] != value) {
+		blocks[index] = value;
+		needsRender = true;
+		//TODO: conditionally dirty the neighbouring chunk if x == 0 or z == 0 or x == sizexz-1 or z == sizexz-1 but should be done from the chunkmanager
+		return true;
+	}
+	
+	return false;
 }
 
 bool Chunk::InChunk(int x, int y, int z)
@@ -140,7 +172,7 @@ bool Chunk::InChunk(int x, int y, int z)
 
 bool Chunk::IsAir(int x, int y, int z)
 {
-	if (!InChunk) {
+	if (!InChunk(x,y,z)) {
 		if (manager == NULL) {
 			return true;
 		}
@@ -153,7 +185,7 @@ bool Chunk::IsAir(int x, int y, int z)
 	return blocks[index] == 0;
 }
 
-OGLObject Chunk::GetOGLObject()
+void Chunk::UpadteOGLObject()
 {
 	GenerateMeshes();
 	const std::initializer_list<VertexAttributeDescriptor> vertexAttribList =
@@ -165,7 +197,8 @@ OGLObject Chunk::GetOGLObject()
 	MeshObject<Vertex> mesh;
 	mesh.indexArray = indices;
 	mesh.vertexArray = vertices;
-	return CreateGLObjectFromMesh(mesh, vertexAttribList);
+	CleanOGLObject(m_mesh);
+	m_mesh = CreateGLObjectFromMesh(mesh, vertexAttribList);
 }
 
 

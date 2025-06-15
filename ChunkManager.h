@@ -26,12 +26,20 @@ public:
     bool IsAir(int x, int y, int z);
     bool SetBlock(int x, int y, int z, int value);
 
+    void GenerateOGLObjects();
+
+    // Optionally expose for rendering
+    const std::unordered_map<std::pair<int, int>, OGLObject, pair_hash>& GetDrawingData() const {
+        return drawingData;
+    }
+
 private:
     int m_chunkWidth;
     int m_chunkHeight;
 
     std::unordered_map<std::pair<int, int>, Chunk, pair_hash> chunks;
-
+    std::unordered_map<std::pair<int, int>, OGLObject, pair_hash> drawingData;
+    
     Chunk& GetOrCreateChunk(int chunkX, int chunkY);
 };
 
