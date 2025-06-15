@@ -75,9 +75,10 @@ MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, u
 }
 
 
-Chunk::Chunk(int sizeXZ, int height)
-    : width(sizeXZ), height(height) {
-	blocks = new uint8_t[sizeXZ*sizeXZ*height]; // Empty by default
+Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int startY)
+	: width(sizeXZ), height(height), startX(startX), startY(startY), manager(manager) {
+	blocks = new uint8_t[sizeXZ * sizeXZ * height]; 
+	// Empty by default
 	for (int y = 0; y < height; ++y) {
 		for (int z = 0; z < width; ++z) {
 			for (int x = 0; x < width; ++x) {
@@ -102,7 +103,7 @@ void Chunk::GenerateMeshes() {
             for (int x = 0; x < width; ++x) {
                 int index = x + y * width + z * width * height;
                 uint8_t block = blocks[index];
-                //if (block == 0) continue; // Air
+                if (block == 0) continue; // Air
 
                 glm::vec3 center = glm::vec3(x, y, z);
 
@@ -117,16 +118,39 @@ void Chunk::GenerateMeshes() {
 
 bool Chunk::SetBlock(int x, int y, int z, uint8_t value)
 {
-	if (x < 0 || x >= width ||
-		y < 0 || y >= height ||
-		z < 0 || z >= width)
-	{
+	if (!InChunk(x,y,z)){
 		return false; // Out of bounds
 	}
 
 	int index = x + y * width + z * width * height;
 	blocks[index] = value;
 	return true;
+}
+
+bool Chunk::InChunk(int x, int y, int z)
+{
+	if (x < 0 || x >= width ||
+		y < 0 || y >= height ||
+		z < 0 || z >= width)
+	{
+		return false; // Out of bounds
+	}
+	return true;
+}
+
+bool Chunk::IsAir(int x, int y, int z)
+{
+	if (!InChunk) {
+		if (manager == NULL) {
+			return true;
+		}
+		else{
+			manager->IsAir(x, y, z);
+		}
+	}
+
+	int index = x + y * width + z * width * height;
+	return blocks[index] == 0;
 }
 
 OGLObject Chunk::GetOGLObject()

@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="ChunkManager.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="includes\GLUtils.cpp" />
