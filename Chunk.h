@@ -22,7 +22,7 @@ class ChunkManager;
 class Chunk {
 public:
     Chunk();
-    Chunk(int width, int height, ChunkManager* manager, int startX, int startY);
+    Chunk(int width, int height, ChunkManager* manager, int startX, int startZ);
     ~Chunk();
     
     void GenerateMeshes();
@@ -39,7 +39,7 @@ public:
 
 private:
     int width, height;
-    int startX, startY;
+    int startX, startZ;
     uint8_t* blocks;
     ChunkManager* manager;
     bool needsRender = true;

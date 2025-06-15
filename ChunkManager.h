@@ -32,6 +32,9 @@ public:
     const std::unordered_map<std::pair<int, int>, OGLObject, pair_hash>& GetDrawingData() const {
         return drawingData;
     }
+    const int GetChunkSize() const {
+        return m_chunkWidth;
+    }
 
 private:
     int m_chunkWidth;
@@ -40,6 +43,6 @@ private:
     std::unordered_map<std::pair<int, int>, Chunk, pair_hash> chunks;
     std::unordered_map<std::pair<int, int>, OGLObject, pair_hash> drawingData;
     
-    Chunk& GetOrCreateChunk(int chunkX, int chunkY);
+    Chunk& GetOrCreateChunk(int chunkX, int chunkZ);
 };
 

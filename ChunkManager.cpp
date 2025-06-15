@@ -4,8 +4,8 @@ ChunkManager::ChunkManager(int chunkWidth, int chunkHeight)
     : m_chunkWidth(chunkWidth), m_chunkHeight(chunkHeight) {
 }
 
-Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkY) {
-    std::pair<int, int> key = { chunkX, chunkY };
+Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
+    std::pair<int, int> key = { chunkX, chunkZ };
 
     auto it = chunks.find(key);
     if (it != chunks.end()) {
@@ -31,35 +31,40 @@ void ChunkManager::GenerateOGLObjects() {
 
 bool ChunkManager::IsAir(int x, int y, int z)
 {
-    if (z<0 || z>= m_chunkHeight) {
+    if (y<0 || y>= m_chunkHeight) {
         return true;
     }
     int chunkX = x / m_chunkWidth;
-    int chunkY = y / m_chunkHeight;
+    int chunkZ = z / m_chunkWidth;
 
-    std::pair<int, int> key = { chunkX, chunkY };
+    std::pair<int, int> key = { chunkX, chunkZ };
 
     auto it = chunks.find(key);
     if (it != chunks.end()) {
         int localX = x % m_chunkWidth;
-        int localY = y % m_chunkHeight;
-        return it->second.IsAir(localX,localY,z);
+        int localZ = z % m_chunkWidth;
+        if (localX < 0) localX += m_chunkWidth;
+        if (localZ < 0) localZ += m_chunkWidth;
+        return it->second.IsAir(localX,y,localZ);
     }
 
     return false;
 }
 
 bool ChunkManager::SetBlock(int x, int y, int z, int value) {
+    if (y < 0 || y >= m_chunkHeight) {
+        return true;
+    }
     int chunkX = x / m_chunkWidth;
-    int chunkY = y / m_chunkHeight;
+    int chunkZ = z / m_chunkWidth;
 
     int localX = x % m_chunkWidth;
-    int localY = y % m_chunkHeight;
+    int localZ = z % m_chunkWidth;
 
     if (localX < 0) localX += m_chunkWidth;
-    if (localY < 0) localY += m_chunkHeight;
+    if (localZ < 0) localZ += m_chunkWidth;
 
-    Chunk& chunk = GetOrCreateChunk(chunkX, chunkY);
-    chunk.SetBlock(localX, localY, z, value);
+    Chunk& chunk = GetOrCreateChunk(chunkX, chunkZ);
+    chunk.SetBlock(localX, y, localZ, value);
     return true;
 }

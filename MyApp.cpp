@@ -10,10 +10,12 @@
 CMyApp::CMyApp()
 {
 	chunk = new Chunk(10, 20,nullptr, 0,0);
+	m_manager = new ChunkManager(5, 5);
 }
 
 CMyApp::~CMyApp()
 {
+	delete m_manager;
 	delete chunk;
 }
 
@@ -142,12 +144,11 @@ void CMyApp::InitGeometry()
 	MeshObject<Vertex> suzanneMeshCPU = ObjParser::parse("Assets/Suzanne.obj");
 	m_Suzanne = CreateGLObjectFromMesh(suzanneMeshCPU, vertexAttribList);
 	m_cube = CreateGLObjectFromMesh(createCubeFace(FaceDirection::Front, glm::vec3(0),78), vertexAttribList);
-	chunk->SetBlock(0, 19, 0, 1);
 	chunk->SetBlock(0, 0, 0, 250);
-	chunk->SetBlock(0, 19, 9, 2);
-	chunk->SetBlock(9,19,9,3);
 	chunk->UpadteOGLObject();
 	m_chunk = chunk->GetOGLObject();
+	m_manager->SetBlock(2, 2, 2, 1);
+	m_manager->SetBlock(-2,2,-2,1);
 }
 
 
@@ -278,6 +279,7 @@ void CMyApp::Update(const SUpdateInfo& updateInfo)
 {
 	m_cameraManipulator.Update(updateInfo.DeltaTimeInSec);
     m_ElapsedTimeInSec = updateInfo.ElapsedTimeInSec;
+	m_manager->GenerateOGLObjects();
 }
 
 void CMyApp::DrawObject(OGLObject& obj, const glm::mat4& world) {
@@ -296,7 +298,15 @@ void CMyApp::RenderGeometry()
 
 	glUniformMatrix4fv(ul("viewProj"), 1, GL_FALSE, glm::value_ptr(m_camera.GetViewProj()));
 	
-	DrawObject(m_chunk,glm::translate(glm::vec3(0.0,0.0,0.0)));
+	for (const auto& [coord, oglObj] : m_manager->GetDrawingData()) {
+		int chunkX = coord.first*m_manager->GetChunkSize();
+		int chunkZ = coord.second * m_manager->GetChunkSize();
+
+		OGLObject mesh = oglObj;
+		glm::mat4 world = glm::translate(glm::vec3(chunkX, 0.0, chunkZ));
+		DrawObject(mesh,world);
+	}
+
 }
 
 void CMyApp::DrawAxes()

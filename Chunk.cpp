@@ -78,18 +78,18 @@ MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, u
 
 glm::ivec3 GetFaceOffset(FaceDirection face) {
 	switch (face) {
-	case FaceDirection::Front: return { 0, 1, 0 };
-	case FaceDirection::Back: return { 0, -1, 0 };
+	case FaceDirection::Front: return { 0, 0, 1 };
+	case FaceDirection::Back: return { 0, 0, -1 };
 	case FaceDirection::Left: return { -1, 0, 0 };
 	case FaceDirection::Right: return { 1, 0, 0 };
-	case FaceDirection::Top: return { 0, 0, 1 };
-	case FaceDirection::Bottom: return { 0, 0, -1 };
+	case FaceDirection::Top: return { 0, 1, 0 };
+	case FaceDirection::Bottom: return { 0, -1, 0 };
 	}
 	return { 0, 0, 0 }; // Default/fallback
 }
 
-Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int startY)
-	: width(sizeXZ), height(height), startX(startX), startY(startY), manager(manager) {
+Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int startZ)
+	: width(sizeXZ), height(height), startX(startX), startZ(startZ), manager(manager) {
 	blocks = new uint8_t[sizeXZ * sizeXZ * height]; 
 	// Empty by default
 	for (int y = 0; y < height; ++y) {
@@ -102,7 +102,7 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 	}
 }
 
-Chunk::Chunk() : width(1), height(1), startX(0), startY(0), manager(nullptr) {
+Chunk::Chunk() : width(1), height(1), startX(0), startZ(0), manager(nullptr) {
 	blocks = new uint8_t[1];
 	blocks[0] = 1;
 }
@@ -131,7 +131,7 @@ void Chunk::GenerateMeshes() {
                 // For now, always show all faces
                 for (int f = 0; f < 6; ++f) {
 					glm::ivec3 offset = GetFaceOffset(static_cast<FaceDirection>(f));
-					if (IsAir(startX + x + offset.x, startY + y + offset.y, z + offset.z)) {
+					if (IsAir(startX + x + offset.x, y + offset.y, startZ + z + offset.z)) {
 						AddFace(static_cast<FaceDirection>(f), center, block);
 					}
                 }

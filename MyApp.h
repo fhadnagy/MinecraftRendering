@@ -90,6 +90,7 @@ protected:
 	OGLObject m_chunk = {};
 	
 	Chunk* chunk;
+	ChunkManager* m_manager;
 
 	// Geometry initialization and termination
 	void InitGeometry();
