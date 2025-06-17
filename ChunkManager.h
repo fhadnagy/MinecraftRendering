@@ -30,6 +30,7 @@ public:
     void GenerateOGLObjects();
     int ChunkXZ(int xz);
     int LocalXZ(int xz);
+    bool ExistsChunk(int x, int z);
 
     // Optionally expose for rendering
     const std::unordered_map<std::pair<int, int>, OGLObject, pair_hash>& GetDrawingData() const {

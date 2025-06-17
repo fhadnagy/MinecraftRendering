@@ -10,7 +10,7 @@
 CMyApp::CMyApp()
 {
 	chunk = new Chunk(2, 4,nullptr, 0,0);
-	m_manager = new ChunkManager(2, 2);
+	m_manager = new ChunkManager(16, 256);
 	/*m_manager->PrintAll();
 	m_manager->SetBlock(2, 2, 2, 1);
 	m_manager->PrintAll();*/
@@ -78,7 +78,7 @@ void CMyApp::RenderGUI()
 	ImGui::SliderInt("Texture Index", &textureIndex, 0, 255);
 
 	if (ImGui::Button("Place Block")) {
-		printf("clicked");
+		printf("clicked\n");
 		/*chunk->SetBlock((int)pos[0], (int)pos[1], (int)pos[2], (uint8_t)textureIndex);
 		chunk->Print();
 		chunk->UpadteOGLObject();

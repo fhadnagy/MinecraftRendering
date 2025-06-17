@@ -95,7 +95,7 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 	for (int y = 0; y < height; ++y) {
 		for (int z = 0; z < width; ++z) {
 			for (int x = 0; x < width; ++x) {
-				blocks[Index(x, y, z)] = 144;
+				blocks[Index(x, y, z)] = 147;
 			}
 		}
 	}
@@ -131,7 +131,7 @@ void Chunk::GenerateMeshes() {
                 // For now, always show all faces
                 for (int f = 0; f < 6; ++f) {
 					glm::ivec3 offset = GetFaceOffset(static_cast<FaceDirection>(f));
-					if (true || IsAir(startX + x + offset.x, y + offset.y, startZ + z + offset.z)) {
+					if (IsAir(x + offset.x, y + offset.y,z + offset.z)) {
 						AddFace(static_cast<FaceDirection>(f), center, block);
 					}
                 }
@@ -170,12 +170,14 @@ bool Chunk::InChunk(int x, int y, int z)
 
 bool Chunk::IsAir(int x, int y, int z)
 {
+	//printf("Chunk(%d,%d)IsAir %d %d %d\n",startX,startZ, x, y, z);
+
 	if (!InChunk(x,y,z)) {
 		if (manager == NULL) {
 			return true;
 		}
 		else{
-			manager->IsAir(x, y, z);
+			return manager->IsAir(startX + x, y, startZ + z);
 		}
 	}
 
@@ -217,7 +219,6 @@ int Chunk::Index(int x, int y, int z)
 {
 	return x + y * width + z * width * height;
 }
-
 
 
 void Chunk::AddFace(FaceDirection face, glm::vec3 center, uint8_t textureCoord) {

@@ -23,7 +23,7 @@ Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
     Chunk& ref = *newChunk;
 
     chunks[key] = std::move(newChunk);
-    printf("New chunk created %d %d", key.first, key.second);
+    //printf("New chunk(%d %d)\n", key.first, key.second);
     return ref;
 }
 
@@ -67,10 +67,17 @@ int ChunkManager::LocalXZ(int xz)
     }
 }
 
+bool ChunkManager::ExistsChunk(int x, int z)
+{
+    return chunks.find(std::make_pair(x, z)) != chunks.end();
+}
+
 
 bool ChunkManager::IsAir(int x, int y, int z)
 {
+    //printf("ManagerIsAir %d %d %d\n",x,y,z);
     if (y<0 || y>= m_chunkHeight) {
+        //printf("y outofbound\n");
         return true;
     }
     
@@ -104,17 +111,24 @@ bool ChunkManager::SetBlock(int x, int y, int z, int value) {
         chunk.MarkDirty();
 
         // Dirty neighbors if at border
-        if (localX == 0)
+    
+        if (localX == 0 && ExistsChunk(chunkX - 1,chunkZ)) {
             GetOrCreateChunk(chunkX - 1, chunkZ).MarkDirty();
-        else if (localX == m_chunkWidth - 1)
+        }
+        else if (localX == m_chunkWidth - 1 && ExistsChunk(chunkX + 1, chunkZ))
+        {
             GetOrCreateChunk(chunkX + 1, chunkZ).MarkDirty();
+        }
 
-        if (localZ == 0)
+        if (localZ == 0 && ExistsChunk(chunkX, chunkZ - 1)) {
             GetOrCreateChunk(chunkX, chunkZ - 1).MarkDirty();
-        else if (localZ == m_chunkWidth - 1)
+        }
+        else if (localZ == m_chunkWidth - 1 && ExistsChunk(chunkX, chunkZ + 1))
+        {
             GetOrCreateChunk(chunkX, chunkZ + 1).MarkDirty();
+        }
 
-        return true;
+        
     }
 
     return false;
