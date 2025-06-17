@@ -95,8 +95,7 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 	for (int y = 0; y < height; ++y) {
 		for (int z = 0; z < width; ++z) {
 			for (int x = 0; x < width; ++x) {
-				int index = x + y * width + z * width * height;
-				blocks[index] = 0;
+				blocks[Index(x, y, z)] = 0;
 			}
 		}
 	}
@@ -122,8 +121,7 @@ void Chunk::GenerateMeshes() {
     for (int y = 0; y < height; ++y) {
         for (int z = 0; z < width; ++z) {
             for (int x = 0; x < width; ++x) {
-                int index = x + y * width + z * width * height;
-                uint8_t block = blocks[index];
+                uint8_t block = blocks[Index(x, y, z)];
                 if (block == 0) continue; // Air
 
                 glm::vec3 center = glm::vec3(x, y, z);
@@ -148,11 +146,9 @@ bool Chunk::SetBlock(int x, int y, int z, uint8_t value)
 		return false; // Out of bounds
 	}
 
-	int index = x + y * width + z * width * height;
-	if (blocks[index] != value) {
-		blocks[index] = value;
+	if (blocks[Index(x, y, z)] != value) {
+		blocks[Index(x, y, z)] = value;
 		needsRender = true;
-		//TODO: conditionally dirty the neighbouring chunk if x == 0 or z == 0 or x == sizexz-1 or z == sizexz-1 but should be done from the chunkmanager
 		return true;
 	}
 	
@@ -181,8 +177,7 @@ bool Chunk::IsAir(int x, int y, int z)
 		}
 	}
 
-	int index = x + y * width + z * width * height;
-	return blocks[index] == 0;
+	return blocks[Index(x,y,z)] == 0;
 }
 
 void Chunk::UpadteOGLObject()
@@ -199,6 +194,26 @@ void Chunk::UpadteOGLObject()
 	mesh.vertexArray = vertices;
 	CleanOGLObject(m_mesh);
 	m_mesh = CreateGLObjectFromMesh(mesh, vertexAttribList);
+}
+
+void Chunk::Print()
+{
+	for (size_t y = 0; y < height; y++)
+	{
+		printf("- - - - - -\n");
+		for (size_t z = 0; z < width; z++)
+		{
+			for (size_t x = 0; x < width; x++)
+			{
+				printf("%d ", blocks[Index(x,y,z)]);
+			}printf("\n");
+		}
+	}
+}
+
+int Chunk::Index(int x, int y, int z)
+{
+	return x + y * width + z * width * height;
 }
 
 

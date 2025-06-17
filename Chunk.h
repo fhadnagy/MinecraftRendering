@@ -36,6 +36,8 @@ public:
     void MarkDirty() { needsRender = true; }
     void UpadteOGLObject();
     const OGLObject GetOGLObject() const { return m_mesh; }
+    void Print();
+    int Index(int x, int y, int z);
 
 private:
     int width, height;

@@ -99,7 +99,7 @@ protected:
 	// Texture variables
 	GLuint m_SamplerID = 0;
 
-	GLuint m_metalTextureID = 0;
+	GLuint m_textureAtlasID = 0;
 
 	// Texture initialization and termination
 	void InitTextures();

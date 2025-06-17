@@ -92,6 +92,7 @@
     <ClCompile Include="includes\CameraManipulator.cpp" />
     <ClCompile Include="includes\ObjParser.cpp" />
     <ClCompile Include="includes\ProgramBuilder.cpp" />
+    <ClCompile Include="MyAppMiscellaneous.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chunk.h" />

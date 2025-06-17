@@ -25,8 +25,10 @@ public:
 
     bool IsAir(int x, int y, int z);
     bool SetBlock(int x, int y, int z, int value);
-
+    void PrintAll();
     void GenerateOGLObjects();
+    int ChunkXZ(int xz);
+    int LocalXZ(int xz);
 
     // Optionally expose for rendering
     const std::unordered_map<std::pair<int, int>, OGLObject, pair_hash>& GetDrawingData() const {
