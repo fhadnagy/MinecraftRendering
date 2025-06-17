@@ -4,29 +4,42 @@ ChunkManager::ChunkManager(int chunkWidth, int chunkHeight)
     : m_chunkWidth(chunkWidth), m_chunkHeight(chunkHeight) {
 }
 
-Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
-    std::pair<int, int> key = { chunkX, chunkZ };
+ChunkManager::~ChunkManager()
+{
+    for (auto& [coord, oglo] : drawingData) {
+        CleanOGLObject(oglo);
+    }
+}
 
+Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
+    auto key = std::make_pair(chunkX, chunkZ);
     auto it = chunks.find(key);
     if (it != chunks.end()) {
-        return it->second;
+        return *(it->second);
     }
 
     // Create and insert new Chunk
-    Chunk newChunk(m_chunkWidth, m_chunkHeight, this, key.first*m_chunkWidth, key.second*m_chunkWidth);
-    chunks[key] = newChunk;
+    auto newChunk = std::make_unique<Chunk>(m_chunkWidth, m_chunkHeight, this, chunkX * m_chunkWidth, chunkZ * m_chunkWidth);
+    Chunk& ref = *newChunk;
+
+    chunks[key] = std::move(newChunk);
     printf("New chunk created %d %d", key.first, key.second);
-    return chunks[key];
+    return ref;
 }
 
 void ChunkManager::GenerateOGLObjects() {
-    drawingData.clear();
+    //drawingData.clear();
 
     for (auto& [coord, chunk] : chunks) {
-        chunk.GenerateMeshes();
-        chunk.UpadteOGLObject();
-        drawingData[coord] = chunk.GetOGLObject();  // This assumes chunk builds and returns one
+        if (!chunk) continue;
+
+        if (chunk->NeedsRender()) {
+            chunk->GenerateMeshes();
+            chunk->UpadteOGLObject();
+            drawingData[coord] = chunk->GetOGLObject();  // This assumes chunk builds and returns one
+        }
     }
+
 }
 
 int ChunkManager::ChunkXZ(int xz)
@@ -67,7 +80,7 @@ bool ChunkManager::IsAir(int x, int y, int z)
     auto it = chunks.find(key);
     if (it != chunks.end()) {
         
-        return it->second.IsAir(LocalXZ(x), y, LocalXZ(z));
+        return it->second->IsAir(LocalXZ(x), y, LocalXZ(z));
     }
     else {
         return true;
@@ -116,6 +129,6 @@ void ChunkManager::PrintAll()
         int chunkZ = coord.second * m_chunkWidth;
 
         printf("x: %d , z: %d", chunkX, chunkZ);
-        chunk.Print();
+        chunk->Print();
     }
 }

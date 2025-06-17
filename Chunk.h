@@ -21,7 +21,7 @@ class ChunkManager;
 
 class Chunk {
 public:
-    Chunk();
+    //Chunk();
     Chunk(int width, int height, ChunkManager* manager, int startX, int startZ);
     ~Chunk();
     
@@ -43,7 +43,7 @@ private:
     int width, height;
     int startX, startZ;
     uint8_t* blocks;
-    ChunkManager* manager;
+    std::shared_ptr<ChunkManager> manager;
     bool needsRender = true;
     // You can store mesh data here
     std::vector<Vertex> vertices;

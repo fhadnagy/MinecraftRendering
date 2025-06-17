@@ -9,8 +9,8 @@
 
 CMyApp::CMyApp()
 {
-	chunk = new Chunk(5, 10,nullptr, 0,0);
-	m_manager = new ChunkManager(5, 5);
+	chunk = new Chunk(2, 4,nullptr, 0,0);
+	m_manager = new ChunkManager(2, 2);
 	/*m_manager->PrintAll();
 	m_manager->SetBlock(2, 2, 2, 1);
 	m_manager->PrintAll();*/
@@ -104,8 +104,8 @@ bool CMyApp::Init()
 	InitFrameBufferObject();
 
 	// Other
-	glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
-	glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
+	//glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
+	//glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
 	glEnable(GL_DEPTH_TEST); // Enable depth testing. (for overlapping geometry)
 
 	// Camera
