@@ -171,12 +171,15 @@ void CMyApp::DrawAxes()
 {
 	// We always want to see it, regardless of whether there is an object in front of it
 	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_PROGRAM_POINT_SIZE); // Required
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	glUseProgram(m_programAxesID);
-
-	glUniformMatrix4fv(ul("viewProj"), 1, GL_FALSE, glm::value_ptr(m_camera.GetViewProj()));
-	glUniformMatrix4fv(ul("world"), 1, GL_FALSE, glm::value_ptr(glm::translate(m_camera.GetAt())));
-
-	glDrawArrays(GL_LINES, 0, 6);
+	glDrawArrays(GL_POINTS, 0, 1);
+	glDisable(GL_PROGRAM_POINT_SIZE); // Required
 	glEnable(GL_DEPTH_TEST);
 	glUseProgram(0);
 }

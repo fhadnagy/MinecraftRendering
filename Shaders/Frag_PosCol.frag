@@ -1,12 +1,16 @@
-#version 430
+#version 430 core
 
-// pipeline-ból bejövő per-fragment attribútumok 
-in vec3 color;
-
-// kimenő érték - a fragment színe 
-out vec4 outputColor;
+out vec4 FragColor;
 
 void main()
 {
-	outputColor = vec4( color, 1.0 );
+    vec2 uv = gl_PointCoord; // from 0 to 1 across the point
+    float lineWidth = 0.05;  // thickness of cross lines
+
+    // Draw vertical and horizontal lines intersecting at center (0.5, 0.5)
+    if (abs(uv.x - 0.5) < lineWidth || abs(uv.y - 0.5) < lineWidth) {
+        FragColor = vec4(1.0, 1.0, 1.0, 1.0); // red color
+    } else {
+        discard; // transparent outside crosshair
+    }
 }

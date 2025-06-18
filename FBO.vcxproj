@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BlockHighLight.vert" />
+    <None Include="CrossHair.frag" />
     <None Include="CrossHair.vert" />
     <None Include="Shaders\BasicFrag.frag" />
     <None Include="Shaders\Vert_PosNormTex.vert" />
