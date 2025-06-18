@@ -84,6 +84,8 @@
   <ItemGroup>
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
+    <ClCompile Include="FPSCameraManipulator.cpp" />
+    <ClCompile Include="FPSCameraManipulator.h" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="includes\GLUtils.cpp" />

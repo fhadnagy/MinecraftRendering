@@ -10,7 +10,7 @@
 CMyApp::CMyApp()
 {
 	chunk = new Chunk(2, 4,nullptr, 0,0);
-	m_manager = new ChunkManager(16, 256);
+	m_manager = new ChunkManager(16, 36);
 	/*m_manager->PrintAll();
 	m_manager->SetBlock(2, 2, 2, 1);
 	m_manager->PrintAll();*/

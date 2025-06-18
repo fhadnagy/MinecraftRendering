@@ -56,6 +56,12 @@
     <ClCompile Include="MyAppMiscellaneous.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FPSCameraManipulator.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCameraManipulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyApp.h">

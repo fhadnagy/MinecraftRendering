@@ -95,7 +95,11 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 	for (int y = 0; y < height; ++y) {
 		for (int z = 0; z < width; ++z) {
 			for (int x = 0; x < width; ++x) {
-				blocks[Index(x, y, z)] = 147;
+				blocks[Index(x, y, z)] = 0;
+				if (y == 0) {
+				blocks[Index(x, y, z)] = 240;
+				}
+
 			}
 		}
 	}

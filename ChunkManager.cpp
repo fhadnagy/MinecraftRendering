@@ -6,9 +6,9 @@ ChunkManager::ChunkManager(int chunkWidth, int chunkHeight)
 
 ChunkManager::~ChunkManager()
 {
-    for (auto& [coord, oglo] : drawingData) {
-        CleanOGLObject(oglo);
-    }
+    //for (auto& [coord, oglo] : drawingData) {
+        //CleanOGLObject(oglo);
+    //}
 }
 
 Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
