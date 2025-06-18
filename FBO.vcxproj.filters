@@ -123,6 +123,9 @@
     <None Include="CrossHair.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="FragBasicCol.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Suzanne.obj">

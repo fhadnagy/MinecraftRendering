@@ -111,6 +111,7 @@
     <None Include="BlockHighLight.vert" />
     <None Include="CrossHair.frag" />
     <None Include="CrossHair.vert" />
+    <None Include="FragBasicCol.frag" />
     <None Include="Shaders\BasicFrag.frag" />
     <None Include="Shaders\Vert_PosNormTex.vert" />
     <None Include="Shaders\Vert_FullScreen.vert" />

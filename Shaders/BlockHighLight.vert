@@ -35,6 +35,6 @@ const vec3 lineColor = vec3(1, 1, 0); // yellow
 void main()
 {
 	vec4 pos = positions[gl_VertexID] + vec4(minCorner, 0.0);
-	gl_Position = viewProj* world * pos;
+	gl_Position = viewProj * world * pos;
 	color = lineColor;
 }

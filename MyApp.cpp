@@ -60,8 +60,8 @@ void CMyApp::RenderGeometry()
 		glm::mat4 world = glm::translate(glm::vec3(chunkX, 0.0, chunkZ));
 		DrawObject(mesh,world);
 	}
-
-	//DrawObject(m_chunk,glm::mat4(1));
+		
+	DrawBlockHighlight();
 }
 
 

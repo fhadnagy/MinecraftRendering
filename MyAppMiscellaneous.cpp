@@ -37,7 +37,7 @@ void CMyApp::InitShaders()
 		.Link();
 
 	InitAxesShader();
-	//InitSkyboxShaders();
+	InitHighlightShaders();
 }
 
 void CMyApp::CleanShaders()
@@ -45,7 +45,7 @@ void CMyApp::CleanShaders()
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_programPostprocessID);
 	CleanAxesShader(); 
-	//CleanSkyboxShaders();
+	CleanHighlightShaders();
 }
 
 void CMyApp::InitAxesShader()
@@ -62,18 +62,18 @@ void CMyApp::CleanAxesShader()
 	glDeleteProgram(m_programAxesID);
 }
 
-void CMyApp::InitSkyboxShaders()
+void CMyApp::InitHighlightShaders()
 {
-	m_programSkyboxID = glCreateProgram();
-	ProgramBuilder{ m_programSkyboxID }
-		.ShaderStage(GL_VERTEX_SHADER, "Shaders/CrossHair.vert")
-		.ShaderStage(GL_FRAGMENT_SHADER, "Shaders/Frag_PosCol.frag")
+	m_programBlockHighlightID = glCreateProgram();
+	ProgramBuilder{ m_programBlockHighlightID }
+		.ShaderStage(GL_VERTEX_SHADER, "Shaders/BlockHighLight.vert")
+		.ShaderStage(GL_FRAGMENT_SHADER, "Shaders/FragBasicCol.frag")
 		.Link();
 }
 
-void CMyApp::CleanSkyboxShaders()
+void CMyApp::CleanHighlightShaders()
 {
-	glDeleteProgram(m_programSkyboxID);
+	glDeleteProgram(m_programBlockHighlightID);
 }
 
 void CMyApp::CleanGeometry()
@@ -184,54 +184,36 @@ void CMyApp::DrawAxes()
 	glUseProgram(0);
 }
 
-void CMyApp::Render()
+void CMyApp::DrawBlockHighlight()
 {
+	// We always want to see it, regardless of whether there is an object in front of it
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
 
-	RenderGeometry();
+	glUseProgram(m_programBlockHighlightID);
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
-	DrawAxes();
-}
+	glUniformMatrix4fv(ul("viewProj"), 1, GL_FALSE, glm::value_ptr(m_camera.GetViewProj()));
+	glUniformMatrix4fv(ul("world"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
+	glUniform3fv(ul("minCorner"), 1, glm::value_ptr(glm::vec3(0,2,0)));
 
-/*
-void CMyApp::Render()
-{
-
-	// Render framebuffer
-
-	glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferID);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	RenderGeometry();
-
-	// Draw a full-screen quad and stretch the image rendered before as texture
-
-	// Step back to default FBO- (=backbuffer)
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glBindVertexArray( 0 );
-
-	glBindTextureUnit( 0, m_colorBufferID );
-	glBindSampler( 0, m_SamplerID );
-
-	glUseProgram(m_programPostprocessID);
-	glUniform1i( ul("frameTex"),0);
-	glUniform1f( ul( "filter_weight"), m_filterWeight);
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	//glBindTextureUnit( 0, 0 );
-	glBindSampler( 0, 0 );
+	glDrawArrays(GL_LINES, 0, 24);
 	glUseProgram(0);
-	glBindVertexArray(0);
-
-	DrawAxes();
+	glEnable(GL_DEPTH_TEST);
 }
-*/
 
+void CMyApp::Render()
+{
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	RenderGeometry();
+	//DrawAxes();
+
+}
 
 // https://wiki.libsdl.org/SDL2/SDL_KeyboardEvent
 // https://wiki.libsdl.org/SDL2/SDL_Keysym
