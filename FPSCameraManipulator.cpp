@@ -19,8 +19,8 @@ void FPSCameraManipulator::SetCamera(Camera* _pCamera)
 	if (!m_pCamera) return;
 
 	// A kezdeti gömbkoordináták beállítása. 
-	m_center = m_pCamera->GetAt();
-	glm::vec3 ToAim = m_center - m_pCamera->GetEye();
+	m_eye_pos = m_pCamera->GetEye();
+	glm::vec3 ToAim = m_pCamera->GetAt() - m_eye_pos;
 
 	m_distance = glm::length(ToAim);
 
@@ -41,7 +41,7 @@ void FPSCameraManipulator::Update(float _deltaTime)
 		cosf(m_v),
 		sinf(m_u) * sinf(m_v));
 	// Az új kamera pozíciót a nézési irány és a távolság alapján számoljuk ki. 
-	glm::vec3 eye = m_center - m_distance * lookDirection;
+	glm::vec3 at = m_eye_pos + m_distance * lookDirection;
 
 	// Az új felfelé irány a világ felfelével legyen azonos. 
 	glm::vec3 up = m_pCamera->GetWorldUp();
@@ -56,11 +56,11 @@ void FPSCameraManipulator::Update(float _deltaTime)
 	glm::vec3 deltaPosition = (m_goForward * forward + m_goRight * right + m_goUp * up) * m_speed * _deltaTime;
 
 	// Az új kamera pozíciót és nézési cél pozíciót beállítjuk. 
-	eye += deltaPosition;
-	m_center += deltaPosition;
+	at += deltaPosition;
+	m_eye_pos += deltaPosition;
 
 	// Frissítjük a kamerát az új pozícióval és nézési iránnyal. 
-	m_pCamera->SetView(eye, m_center, m_worldUp);
+	m_pCamera->SetView(m_eye_pos,at , m_worldUp);
 }
 
 
@@ -120,18 +120,13 @@ void FPSCameraManipulator::KeyboardUp(const SDL_KeyboardEvent& key)
 
 void FPSCameraManipulator::MouseMove(const SDL_MouseMotionEvent& mouse)
 {
-	if (mouse.state & SDL_BUTTON_LMASK)
-	{
+	
 		float du = mouse.xrel / 100.0f;
 		float dv = mouse.yrel / 100.0f;
 
 		m_u += du;
 		m_v = glm::clamp<float>(m_v + dv, 0.1f, 3.1f);
-	}
-	if (mouse.state & SDL_BUTTON_RMASK)
-	{
-		m_distance *= pow(0.9f, mouse.yrel / 50.0f);
-	}
+	
 }
 
 void FPSCameraManipulator::MouseWheel(const SDL_MouseWheelEvent& wheel)

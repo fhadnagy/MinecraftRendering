@@ -16,6 +16,7 @@
 #include "GLUtils.hpp"
 #include "Camera.h"
 #include "CameraManipulator.h"
+#include "FPSCameraManipulator.h"
 #include "ChunkManager.h"
 
 
@@ -58,7 +59,8 @@ protected:
 
 	// Camera
 	Camera m_camera;
-	CameraManipulator m_cameraManipulator;
+	//CameraManipulator m_fpsCamera;
+	FPSCameraManipulator m_fpsCamera;
 
 	// OpenGL
 
@@ -67,6 +69,7 @@ protected:
 	// Shader variables
 	GLuint m_programID = 0;			// Shader of the objects
 	GLuint m_programAxesID = 0;		// Program showing X,Y,Z directions
+	GLuint m_programSkyboxID = 0;		// Program showing X,Y,Z directions
 	GLuint m_programPostprocessID = 0; // Postprocess program
 
 	float m_filterWeight = 0;
@@ -82,6 +85,8 @@ protected:
 	void CleanShaders();
 	void InitAxesShader();
 	void CleanAxesShader();
+	void InitSkyboxShaders();
+	void CleanSkyboxShaders();
 	void DrawObject(OGLObject& obj, const glm::mat4& world);
 
 	// Geometry variables

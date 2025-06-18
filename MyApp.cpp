@@ -32,7 +32,7 @@ void CMyApp::InitGeometry()
 
 void CMyApp::Update(const SUpdateInfo& updateInfo)
 {
-	m_cameraManipulator.Update(updateInfo.DeltaTimeInSec);
+	m_fpsCamera.Update(updateInfo.DeltaTimeInSec);
     m_ElapsedTimeInSec = updateInfo.ElapsedTimeInSec;
 }
 
@@ -114,7 +114,7 @@ bool CMyApp::Init()
 		glm::vec3(0, 0, 0),	// Which point of the scene we are looking at - at
 		glm::vec3(0, 1, 0)	// Upwards direction - up
 	);
-	m_cameraManipulator.SetCamera(&m_camera);
+	m_fpsCamera.SetCamera(&m_camera);
 
 	return true;
 }

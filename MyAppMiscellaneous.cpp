@@ -37,13 +37,15 @@ void CMyApp::InitShaders()
 		.Link();
 
 	InitAxesShader();
+	//InitSkyboxShaders();
 }
 
 void CMyApp::CleanShaders()
 {
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_programPostprocessID);
-	CleanAxesShader();
+	CleanAxesShader(); 
+	//CleanSkyboxShaders();
 }
 
 void CMyApp::InitAxesShader()
@@ -60,7 +62,19 @@ void CMyApp::CleanAxesShader()
 	glDeleteProgram(m_programAxesID);
 }
 
+void CMyApp::InitSkyboxShaders()
+{
+	m_programSkyboxID = glCreateProgram();
+	ProgramBuilder{ m_programSkyboxID }
+		.ShaderStage(GL_VERTEX_SHADER, "Shaders/CrossHair.vert")
+		.ShaderStage(GL_FRAGMENT_SHADER, "Shaders/Frag_PosCol.frag")
+		.Link();
+}
 
+void CMyApp::CleanSkyboxShaders()
+{
+	glDeleteProgram(m_programSkyboxID);
+}
 
 void CMyApp::CleanGeometry()
 {
@@ -240,19 +254,19 @@ void CMyApp::KeyboardDown(const SDL_KeyboardEvent& key)
 			glPolygonMode(GL_FRONT_AND_BACK, polygonMode); // Set the new polygon mode
 		}
 	}
-	m_cameraManipulator.KeyboardDown(key);
+	m_fpsCamera.KeyboardDown(key);
 }
 
 void CMyApp::KeyboardUp(const SDL_KeyboardEvent& key)
 {
-	m_cameraManipulator.KeyboardUp(key);
+	m_fpsCamera.KeyboardUp(key);
 }
 
 // https://wiki.libsdl.org/SDL2/SDL_MouseMotionEvent
 
 void CMyApp::MouseMove(const SDL_MouseMotionEvent& mouse)
 {
-	m_cameraManipulator.MouseMove(mouse);
+	m_fpsCamera.MouseMove(mouse);
 }
 
 // https://wiki.libsdl.org/SDL2/SDL_MouseButtonEvent
@@ -269,7 +283,7 @@ void CMyApp::MouseUp(const SDL_MouseButtonEvent& mouse)
 
 void CMyApp::MouseWheel(const SDL_MouseWheelEvent& wheel)
 {
-	m_cameraManipulator.MouseWheel(wheel);
+	m_fpsCamera.MouseWheel(wheel);
 }
 
 // New window size

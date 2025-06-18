@@ -108,6 +108,8 @@
     <ClInclude Include="includes\ProgramBuilder.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BlockHighLight.vert" />
+    <None Include="CrossHair.vert" />
     <None Include="Shaders\BasicFrag.frag" />
     <None Include="Shaders\Vert_PosNormTex.vert" />
     <None Include="Shaders\Vert_FullScreen.vert" />

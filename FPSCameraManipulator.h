@@ -41,7 +41,7 @@ private:
 	float	m_distance = 0.0f;
 
 	// A középpontja a kör modellnek. 
-	glm::vec3 m_center = glm::vec3(0.0f);
+	glm::vec3 m_eye_pos = glm::vec3(0.0f);
 
 	// A világ felfele vektora a kamerának. 
 	glm::vec3 m_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);

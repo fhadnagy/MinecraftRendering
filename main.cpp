@@ -163,6 +163,7 @@ int main( int argc, char* args[] )
 
 		// ImGui ablak megjelenítése 
 		bool ShowImGui = true;
+		SDL_bool relativeMouse = SDL_FALSE;
 
 		while (!quit)
 		{
@@ -179,8 +180,7 @@ int main( int argc, char* args[] )
 						quit = true;
 						break;
 					case SDL_KEYDOWN:
-						if ( ev.key.keysym.sym == SDLK_ESCAPE )
-							quit = true;
+							//quit = true;
 
 						// ALT + ENTER vált teljes képernyőre, és vissza. 
 						if ( ( ev.key.keysym.sym == SDLK_RETURN )  // Enter le lett nyomva, ... 
@@ -199,6 +199,22 @@ int main( int argc, char* args[] )
 							ShowImGui = !ShowImGui;
 							is_keyboard_captured = true; // A CTRL+F1-t ne kapja meg az alkalmazás. 
 						}
+						// CTRL + E SetReltiveMousePositin
+						if ((ev.key.keysym.sym == SDLK_ESCAPE)  // F1 le lett nyomva, ... 
+							//&& (ev.key.keysym.mod & KMOD_CTRL)   // az CTRLal együtt, ... 
+							&& !(ev.key.keysym.mod & (KMOD_SHIFT | KMOD_ALT | KMOD_GUI))) // de más modifier gomb nem lett lenyomva. 
+						{
+							if (relativeMouse == SDL_TRUE) {
+								relativeMouse = SDL_FALSE;
+							}
+							else if (relativeMouse == SDL_FALSE)
+							{
+								relativeMouse = SDL_TRUE;
+							}
+							SDL_SetRelativeMouseMode(relativeMouse);
+							is_keyboard_captured = true; // A CTRL+E-t ne kapja meg az alkalmazás. 
+						}
+
 						if ( !is_keyboard_captured )
 							app.KeyboardDown(ev.key);
 						break;
@@ -219,9 +235,12 @@ int main( int argc, char* args[] )
 							app.MouseWheel(ev.wheel);
 						break;
 					case SDL_MOUSEMOTION:
-						if ( !is_mouse_captured )
+						// Always pass motion to app if in relative mode
+						if (relativeMouse == SDL_TRUE && !is_mouse_captured) {
 							app.MouseMove(ev.motion);
+						}
 						break;
+
 					case SDL_WINDOWEVENT:
 						// Néhány platformon (pl. Windows) a SIZE_CHANGED nem hívódik meg az első megjelenéskor.
 						// Szerintünk ez bug az SDL könytárban.

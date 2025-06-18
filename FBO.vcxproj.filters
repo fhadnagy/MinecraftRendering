@@ -114,6 +114,12 @@
     <None Include="Shaders\BasicFrag.frag">
       <Filter>Shaders\Axes</Filter>
     </None>
+    <None Include="BlockHighLight.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="CrossHair.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Suzanne.obj">
