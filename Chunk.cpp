@@ -1,7 +1,95 @@
 #include "ChunkManager.h"
 #include <iostream>
 
+MeshObject<Vertex> createGrassFace(FaceDirection face, glm::vec3 relativePoint) {
+	MeshObject<Vertex> mesh;
+	glm::vec3 normal;
+	glm::vec3 offsets[4];
+	glm::vec3 center = relativePoint + glm::vec3(0.5, 0.5, 0.5);
+
+	int textureCoord = 240;
+
+	
+
+	float h = 1.0 / 2.0f;
+
+	switch (face) {
+	case FaceDirection::Front:
+		normal = { 0, 0, 1 };
+		textureCoord = 243;
+		offsets[0] = { -h, -h, h };
+		offsets[1] = { h, -h, h };
+		offsets[2] = { h,  h, h };
+		offsets[3] = { -h,  h, h };
+		break;
+	case FaceDirection::Back:
+		textureCoord = 243;
+		normal = { 0, 0, -1 };
+		offsets[0] = { h, -h, -h };
+		offsets[1] = { -h, -h, -h };
+		offsets[2] = { -h,  h, -h };
+		offsets[3] = { h,  h, -h };
+		break;
+	case FaceDirection::Left:
+		textureCoord = 243;
+		normal = { -1, 0, 0 };
+		offsets[0] = { -h, -h, -h };
+		offsets[1] = { -h, -h,  h };
+		offsets[2] = { -h,  h,  h };
+		offsets[3] = { -h,  h, -h };
+		break;
+	case FaceDirection::Right:
+		textureCoord = 243;
+		normal = { 1, 0, 0 };
+		offsets[0] = { h, -h,  h };
+		offsets[1] = { h, -h, -h };
+		offsets[2] = { h,  h, -h };
+		offsets[3] = { h,  h,  h };
+		break;
+	case FaceDirection::Top:
+		textureCoord = 240;
+		normal = { 0, 1, 0 };
+		offsets[0] = { -h, h,  h };
+		offsets[1] = { h, h,  h };
+		offsets[2] = { h, h, -h };
+		offsets[3] = { -h, h, -h };
+		break;
+	case FaceDirection::Bottom:
+		textureCoord = 242;
+		normal = { 0, -1, 0 };
+		offsets[0] = { -h, -h, -h };
+		offsets[1] = { h, -h, -h };
+		offsets[2] = { h, -h,  h };
+		offsets[3] = { -h, -h,  h };
+		break;
+	}
+
+	// Texture UV top-left
+	float u = (textureCoord % 16) * TW;
+	float v = (textureCoord / 16) * TW;
+
+	glm::vec2 uv0 = { u, v };
+	glm::vec2 uv1 = { u + TW, v };
+	glm::vec2 uv2 = { u + TW, v + TW };
+	glm::vec2 uv3 = { u, v + TW };
+
+	mesh.vertexArray = {
+		{center + offsets[0], normal, uv0},
+		{center + offsets[1], normal, uv1},
+		{center + offsets[2], normal, uv2},
+		{center + offsets[3], normal, uv3},
+	};
+
+	mesh.indexArray = { 0, 1, 2, 2, 3, 0 };
+
+	return mesh;
+}
+
+
 MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, uint8_t textureCoord) {
+	if (textureCoord == 100) {
+		return createGrassFace(face, relativePoint);
+	}
 	MeshObject<Vertex> mesh;
 	glm::vec3 normal;
 	glm::vec3 offsets[4];
@@ -97,7 +185,7 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 			for (int x = 0; x < width; ++x) {
 				blocks[Index(x, y, z)] = 0;
 				if (y == 0) {
-				blocks[Index(x, y, z)] = 240;
+				blocks[Index(x, y, z)] = 100;
 				}
 
 			}
@@ -239,3 +327,4 @@ void Chunk::AddFace(FaceDirection face, glm::vec3 center, uint8_t textureCoord) 
     indices.push_back(startIndex + 2);
     indices.push_back(startIndex + 3);
 }
+
