@@ -184,11 +184,11 @@ void CMyApp::DrawAxes()
 	glUseProgram(0);
 }
 
-void CMyApp::DrawBlockHighlight()
+void CMyApp::DrawBlockHighlight(glm::vec3 pos, glm::vec3 col)
 {
 	// We always want to see it, regardless of whether there is an object in front of it
 
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 
 	glUseProgram(m_programBlockHighlightID);
 	GLuint vao;
@@ -197,12 +197,14 @@ void CMyApp::DrawBlockHighlight()
 
 	glUniformMatrix4fv(ul("viewProj"), 1, GL_FALSE, glm::value_ptr(m_camera.GetViewProj()));
 	glUniformMatrix4fv(ul("world"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
-	glUniform3fv(ul("minCorner"), 1, glm::value_ptr(glm::vec3(0,2,0)));
+	glUniform3fv(ul("minCorner"), 1, glm::value_ptr(pos));
+	glUniform3fv(ul("colorIN"), 1, glm::value_ptr(col));
 
 	glDrawArrays(GL_LINES, 0, 24);
 	glUseProgram(0);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 }
+
 
 void CMyApp::Render()
 {

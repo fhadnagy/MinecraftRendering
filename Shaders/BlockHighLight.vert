@@ -7,6 +7,7 @@ out vec3 color;
 uniform mat4 world;
 uniform mat4 viewProj;
 uniform vec3 minCorner;
+uniform vec3 colorIN;
 
 // 12 edges of the cube = 24 vertices (each line has a start and end)
 const vec4 positions[24] = vec4[24](
@@ -35,6 +36,6 @@ const vec3 lineColor = vec3(1, 1, 0); // yellow
 void main()
 {
 	vec4 pos = positions[gl_VertexID] + vec4(minCorner, 0.0);
-	gl_Position = viewProj * world * pos;
-	color = lineColor;
+	gl_Position = viewProj* world * pos;
+	color = colorIN;
 }

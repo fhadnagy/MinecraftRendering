@@ -66,7 +66,7 @@ protected:
 
 	void DrawAxes();
 
-	void DrawBlockHighlight();
+	void DrawBlockHighlight(glm::vec3 pos, glm::vec3 col);
 
 	// Shader variables
 	GLuint m_programID = 0;			// Shader of the objects

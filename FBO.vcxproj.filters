@@ -123,8 +123,8 @@
     <None Include="CrossHair.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="FragBasicCol.frag">
-      <Filter>Shaders</Filter>
+    <None Include="Shaders\FragBasicCol.frag">
+      <Filter>Shaders\Axes</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

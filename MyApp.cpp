@@ -61,7 +61,8 @@ void CMyApp::RenderGeometry()
 		DrawObject(mesh,world);
 	}
 		
-	DrawBlockHighlight();
+	DrawBlockHighlight(glm::vec3(2, 2, 2), glm::vec3(1, 0, 0));
+	DrawBlockHighlight(glm::vec3(2,5,2), glm::vec3(1,1,0));
 }
 
 
@@ -104,8 +105,8 @@ bool CMyApp::Init()
 	InitFrameBufferObject();
 
 	// Other
-	//glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
-	//glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
+	glEnable(GL_CULL_FACE);	 // Enable discarding the back-facing faces.
+	glCullFace(GL_BACK);     // GL_BACK: facets facing away from camera, GL_FRONT: facets facing towards the camera
 	glEnable(GL_DEPTH_TEST); // Enable depth testing. (for overlapping geometry)
 
 	// Camera
