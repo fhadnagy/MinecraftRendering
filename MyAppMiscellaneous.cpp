@@ -260,10 +260,29 @@ void CMyApp::MouseMove(const SDL_MouseMotionEvent& mouse)
 
 void CMyApp::MouseDown(const SDL_MouseButtonEvent& mouse)
 {
+	if (!mouseDown)
+	{
+		if (mouse.button == SDL_BUTTON_RIGHT)
+		{
+			printf("R\n");
+			m_manager->SetBlockAtPlace(5);
+			m_manager->GenerateOGLObjects();
+		}
+		else if (mouse.button == SDL_BUTTON_LEFT)
+		{
+			printf("L\n");
+			m_manager->SetBlockAtPlace(0);
+			m_manager->GenerateOGLObjects();
+		}
+
+		mouseDown = true;
+	}
 }
+
 
 void CMyApp::MouseUp(const SDL_MouseButtonEvent& mouse)
 {
+	mouseDown = false;
 }
 
 // https://wiki.libsdl.org/SDL2/SDL_MouseWheelEvent

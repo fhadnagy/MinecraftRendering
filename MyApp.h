@@ -51,12 +51,12 @@ public:
 protected:
 	void SetupDebugCallback();
 	void RenderGeometry();
-
+	
 	// Variables
 	float m_ElapsedTimeInSec = 0.0f;
 
 	glm::mat4 m_suzanneWorldTransform[ 9 ] = {};
-
+	bool mouseDown = false;
 	// Camera
 	Camera m_camera;
 	//CameraManipulator m_fpsCamera;

@@ -72,6 +72,124 @@ bool ChunkManager::ExistsChunk(int x, int z)
     return chunks.find(std::make_pair(x, z)) != chunks.end();
 }
 
+void ChunkManager::CalculateRayTrace(glm::vec3 eye, glm::vec3 direction)
+{
+    const float maxDistance = 25.0f;
+    const float maxDistanceSq = maxDistance * maxDistance;
+
+    glm::ivec3 currentBlock = ContainingBlock(eye);
+
+    glm::ivec3 step = glm::ivec3(
+        direction.x > 0 ? 1 : (direction.x < 0 ? -1 : 0),
+        direction.y > 0 ? 1 : (direction.y < 0 ? -1 : 0),
+        direction.z > 0 ? 1 : (direction.z < 0 ? -1 : 0)
+    );
+
+    glm::vec3 invDir = 1.0f / direction;
+
+    glm::vec3 blockBoundary = glm::vec3(currentBlock) + glm::vec3(
+        step.x > 0 ? 1.0f : 0.0f,
+        step.y > 0 ? 1.0f : 0.0f,
+        step.z > 0 ? 1.0f : 0.0f
+    );
+
+
+    glm::vec3 tMax = (blockBoundary - eye) * invDir;
+    glm::vec3 tDelta = glm::abs(invDir);
+
+    glm::ivec3 lastBlock = currentBlock;
+
+    highlightPosition = glm::vec3(-1);
+    placePosition = glm::vec3(-1);
+
+    const int maxSteps = 512;
+
+    for (int i = 0; i < maxSteps; ++i)
+    {
+        glm::vec3 hitPos = eye + direction * glm::min(tMax.x, glm::min(tMax.y, tMax.z));
+        float distSq = glm::distance(eye, hitPos)* glm::distance(eye, hitPos);
+
+        if (distSq > maxDistanceSq)
+            break;
+
+        if (currentBlock.y>=m_chunkHeight || currentBlock.y<0) {
+            highlightPosition = glm::vec3(currentBlock);
+            placePosition = glm::vec3(lastBlock);
+            return;
+        }
+
+        if (!IsAir(currentBlock.x, currentBlock.y, currentBlock.z))
+        {
+            highlightPosition = glm::vec3(currentBlock);
+            placePosition = glm::vec3(lastBlock);
+            return;
+        }
+
+        lastBlock = currentBlock;
+        //printf("Current: %d, %d, %d\n", lastBlock.x, lastBlock.y, lastBlock.z);
+
+        // Advance to next voxel boundary
+        if (tMax.x < tMax.y)
+        {
+            if (tMax.x < tMax.z)
+            {
+                currentBlock.x += step.x;
+                tMax.x += tDelta.x;
+            }
+            else
+            {
+                currentBlock.z += step.z;
+                tMax.z += tDelta.z;
+            }
+        }
+        else
+        {
+            if (tMax.y < tMax.z)
+            {
+                currentBlock.y += step.y;
+                tMax.y += tDelta.y;
+            }
+            else
+            {
+                currentBlock.z += step.z;
+                tMax.z += tDelta.z;
+            }
+        }
+    }
+
+    // Nothing hit within Euclidean range
+    highlightPosition = glm::vec3(-2);
+    placePosition = glm::vec3(-1);
+}
+
+
+glm::ivec3 ChunkManager::ContainingBlock(glm::vec3 pos)
+{
+    return glm::ivec3(
+        static_cast<int>(std::floor(pos.x)),
+        static_cast<int>(std::floor(pos.y)),
+        static_cast<int>(std::floor(pos.z))
+    );
+}
+
+void ChunkManager::SetBlockAtPlace(int value)
+{
+    if (value == 0) {
+        if (highlightPosition.y > -1.5) {
+            glm::ivec3 block = ContainingBlock(highlightPosition + glm::vec3(0.01));
+            SetBlock(block.x, block.y, block.z, value);
+        }
+        printf("Delete\n");
+    }
+    else {
+        if (placePosition.y > -.5) {
+            glm::ivec3 block = ContainingBlock(placePosition + glm::vec3(0.01));
+            SetBlock(block.x, block.y, block.z, value);
+        }
+    }
+   
+
+}
 
 bool ChunkManager::IsAir(int x, int y, int z)
 {

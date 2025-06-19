@@ -31,7 +31,9 @@ public:
     int ChunkXZ(int xz);
     int LocalXZ(int xz);
     bool ExistsChunk(int x, int z);
-    void CalculateRayTrace();
+    void CalculateRayTrace(glm::vec3 eye, glm::vec3 direction);
+    glm::ivec3 ContainingBlock(glm::vec3 pos);
+    void SetBlockAtPlace(int value);
 
     // Optionally expose for rendering
     const std::unordered_map<std::pair<int, int>, OGLObject, pair_hash>& GetDrawingData() const {

@@ -11,9 +11,10 @@ CMyApp::CMyApp()
 {
 	chunk = new Chunk(2, 4,nullptr, 0,0);
 	m_manager = new ChunkManager(16, 36);
-	/*m_manager->PrintAll();
 	m_manager->SetBlock(2, 2, 2, 1);
+	/*m_manager->PrintAll();
 	m_manager->PrintAll();*/
+	//m_manager->CalculateRayTrace(glm::vec3(0,10,0),glm::vec3(1,-1,1));
 
 }
 
@@ -34,6 +35,7 @@ void CMyApp::Update(const SUpdateInfo& updateInfo)
 {
 	m_fpsCamera.Update(updateInfo.DeltaTimeInSec);
     m_ElapsedTimeInSec = updateInfo.ElapsedTimeInSec;
+	m_manager->CalculateRayTrace(m_camera.GetEye(), glm::normalize(m_camera.GetAt() - m_camera.GetEye()));
 }
 
 void CMyApp::DrawObject(OGLObject& obj, const glm::mat4& world) {
@@ -60,9 +62,19 @@ void CMyApp::RenderGeometry()
 		glm::mat4 world = glm::translate(glm::vec3(chunkX, 0.0, chunkZ));
 		DrawObject(mesh,world);
 	}
-		
-	DrawBlockHighlight(glm::vec3(2, 2, 2), glm::vec3(1, 0, 0));
-	DrawBlockHighlight(glm::vec3(2,5,2), glm::vec3(1,1,0));
+	if (m_manager->highlightPosition.y > -1.5) {
+		glm::vec3 direction = glm::normalize(m_camera.GetEye() - m_camera.GetAt());
+		glm::ivec3 step = glm::ivec3(
+			direction.x > 0 ? 1 : (direction.x < 0 ? -1 : 0),
+			direction.y > 0 ? 1 : (direction.y < 0 ? -1 : 0),
+			direction.z > 0 ? 1 : (direction.z < 0 ? -1 : 0)
+		);
+		DrawBlockHighlight(m_manager->highlightPosition+0.01f*direction, glm::vec3(1, 1, 0));
+	}
+	if (m_manager->placePosition.y > -.5) {
+		DrawBlockHighlight(m_manager->placePosition, glm::vec3(1, 0, 0));
+	}
+	DrawAxes();
 }
 
 
