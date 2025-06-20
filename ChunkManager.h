@@ -32,6 +32,8 @@ public:
     int LocalXZ(int xz);
     bool ExistsChunk(int x, int z);
     void CalculateRayTrace(glm::vec3 eye, glm::vec3 direction);
+    int GetSelection();
+    int BlockAt(glm::ivec3 pos);
     glm::ivec3 ContainingBlock(glm::vec3 pos);
     void SetBlockAtPlace(int value);
 

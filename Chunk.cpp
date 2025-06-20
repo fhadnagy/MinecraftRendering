@@ -87,7 +87,7 @@ MeshObject<Vertex> createGrassFace(FaceDirection face, glm::vec3 relativePoint) 
 
 
 MeshObject<Vertex> createCubeFace(FaceDirection face, glm::vec3 relativePoint, uint8_t textureCoord) {
-	if (textureCoord == 100) {
+	if (textureCoord == 240) {
 		return createGrassFace(face, relativePoint);
 	}
 	MeshObject<Vertex> mesh;
@@ -185,9 +185,9 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 		for (int z = 0; z < width; ++z) {
 			for (int x = 0; x < width; ++x) {
 				for (int y = 0; y < height; ++y) {
-					blocks[Index(x, y, z)] = 0;
+					blocks[Index(x, y, z)] = AIR;
 					if (y == 0) {
-						blocks[Index(x, y, z)] = 100;
+						blocks[Index(x, y, z)] = 240;
 					}
 				}
 			}
@@ -201,10 +201,10 @@ Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int star
 					if (y > sampleheight && y < 36) {
 						blocks[Index(x, y, z)] = 179;
 					}else if (y > sampleheight) {
-						blocks[Index(x, y, z)] = 0;
+						blocks[Index(x, y, z)] = AIR;
 					}
 					else if (y > sampleheight - 1) {
-						blocks[Index(x, y, z)] = 100;
+						blocks[Index(x, y, z)] = 240;
 					}
 					else if (y > sampleheight - 3) {
 						blocks[Index(x, y, z)] = 242;
@@ -249,7 +249,7 @@ void Chunk::GenerateMeshes() {
         for (int z = 0; z < width; ++z) {
             for (int x = 0; x < width; ++x) {
                 uint8_t block = blocks[Index(x, y, z)];
-                if (block == 0) continue; // Air
+                if (block == AIR) continue; // Air
 
                 glm::vec3 center = glm::vec3(x, y, z);
 
@@ -306,7 +306,21 @@ bool Chunk::IsAir(int x, int y, int z)
 		}
 	}
 
-	return blocks[Index(x,y,z)] == 0;
+	return blocks[Index(x,y,z)] == AIR;
+}
+
+int Chunk::BlockAt(int x, int y, int z)
+{
+	if (!InChunk(x, y, z)) {
+		if (manager == NULL) {
+			return AIR;
+		}
+		else {
+			return manager->BlockAt(glm::ivec3(startX + x, y, startZ + z));
+		}
+	}
+
+	return blocks[Index(x, y, z)];
 }
 
 void Chunk::UpadteOGLObject()

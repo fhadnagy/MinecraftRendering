@@ -89,24 +89,11 @@ void CMyApp::RenderGUI()
 	//ImGui::ShowDemoWindow();
 
 	//ImGui::SetNextWindowSize(ImVec2(455, 60), ImGuiCond_FirstUseEver);
-	static float pos[3] = { 0.0f, 0.0f, 0.0f };
-
-	ImGui::InputFloat3("Position", pos);
+	
 	ImGui::SliderInt("Texture Index", &m_blockId, 0, 255);
 
-	if (ImGui::Button("Place Block")) {
-		printf("clicked\n");
-		/*chunk->SetBlock((int)pos[0], (int)pos[1], (int)pos[2], (uint8_t)textureIndex);
-		chunk->Print();
-		chunk->UpadteOGLObject();
-		m_chunk = chunk->GetOGLObject();*/
-		m_manager->SetBlock((int)pos[0], (int)pos[1], (int)pos[2], (uint8_t)m_blockId);
-		m_manager->GenerateOGLObjects();
-	}
-
-
-	ImVec2 uv0 = { m_blockId % 16 * (float)TW , m_blockId / 16 * (float)TW };
-	ImVec2 uv1 = { (m_blockId % 16+1) * (float)TW, (m_blockId / 16 + 1) * (float)TW };
+	ImVec2 uv0 = { m_blockId % 16 * (float)TW ,(m_blockId / 16 + 1) * (float)TW };
+	ImVec2 uv1 = { (m_blockId % 16+1) * (float)TW, (m_blockId / 16 + 0) * (float)TW };
 
 	ImGui::Text("Selected Tile:");
 	ImGui::Image((void*)(intptr_t)m_textureAtlasID, ImVec2(64, 64), uv0, uv1);

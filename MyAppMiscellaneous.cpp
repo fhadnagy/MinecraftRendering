@@ -263,13 +263,17 @@ void CMyApp::MouseDown(const SDL_MouseButtonEvent& mouse)
 	{
 		if (mouse.button == SDL_BUTTON_RIGHT)
 		{
-			m_manager->SetBlockAtPlace(0);
+			m_manager->SetBlockAtPlace(m_blockId);
 			m_manager->GenerateOGLObjects();
 		}
 		else if (mouse.button == SDL_BUTTON_LEFT)
 		{
-			m_manager->SetBlockAtPlace(m_blockId);
+			m_manager->SetBlockAtPlace(Chunk::AIR);
 			m_manager->GenerateOGLObjects();
+		}
+		else if (mouse.button == SDL_BUTTON_MIDDLE)
+		{
+			m_blockId = m_manager->GetSelection();
 		}
 
 		mouseDown = true;

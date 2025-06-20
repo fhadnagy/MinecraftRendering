@@ -163,6 +163,34 @@ void ChunkManager::CalculateRayTrace(glm::vec3 eye, glm::vec3 direction)
     placePosition = glm::vec3(-1);
 }
 
+int ChunkManager::GetSelection()
+{
+    glm::ivec3 block = highlightPosition;
+    return BlockAt(block);
+}
+
+int ChunkManager::BlockAt(glm::ivec3 pos)
+{
+    //printf("ManagerIsAir %d %d %d\n",x,y,z);
+    if (pos.y < 0 || pos.y >= m_chunkHeight) {
+        //printf("y outofbound\n");
+        return Chunk::AIR;
+    }
+
+
+    std::pair<int, int> key = { ChunkXZ(pos.x), ChunkXZ(pos.z) };
+
+    auto it = chunks.find(key);
+    if (it != chunks.end()) {
+
+        return it->second->BlockAt(LocalXZ(pos.x), pos.y, LocalXZ(pos.z));
+    }
+    else {
+        return Chunk::AIR;
+    }
+
+}
+
 
 glm::ivec3 ChunkManager::ContainingBlock(glm::vec3 pos)
 {
@@ -175,7 +203,7 @@ glm::ivec3 ChunkManager::ContainingBlock(glm::vec3 pos)
 
 void ChunkManager::SetBlockAtPlace(int value)
 {
-    if (value == 0) {
+    if (value == Chunk::AIR) {
         if (highlightPosition.y > -1.5) {
             glm::ivec3 block = ContainingBlock(highlightPosition + glm::vec3(0.01));
             SetBlock(block.x, block.y, block.z, value);

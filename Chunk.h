@@ -33,13 +33,14 @@ public:
     bool SetBlock(int x, int y, int z, uint8_t value);
     bool InChunk(int x, int y, int z);
     bool IsAir(int x, int y, int z);
+    int BlockAt(int x, int y, int z);
     bool NeedsRender() const { return needsRender; }
     void MarkDirty() { needsRender = true; }
     void UpadteOGLObject();
     const OGLObject GetOGLObject() const { return m_mesh; }
     void Print();
     int Index(int x, int y, int z);
-
+    static uint8_t const AIR = 100;
 private:
     int width, height;
     int startX, startZ;
