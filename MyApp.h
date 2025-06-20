@@ -61,7 +61,7 @@ protected:
 	Camera m_camera;
 	//CameraManipulator m_fpsCamera;
 	FPSCameraManipulator m_fpsCamera;
-
+	int m_blockId;
 	// OpenGL
 
 	void DrawAxes();
@@ -92,11 +92,7 @@ protected:
 	void DrawObject(OGLObject& obj, const glm::mat4& world);
 
 	// Geometry variables
-	OGLObject m_Suzanne = {};
-	OGLObject m_cube = {};
-	OGLObject m_chunk = {};
 	
-	Chunk* chunk;
 	ChunkManager* m_manager;
 
 	// Geometry initialization and termination

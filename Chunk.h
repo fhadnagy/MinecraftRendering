@@ -2,6 +2,8 @@
 
 #include <vector>
 #include "GLUtils.hpp"
+#include "PerlinNoise.h"
+
 #define TW 0.0625
 
 enum class FaceDirection {
@@ -21,7 +23,6 @@ class ChunkManager;
 
 class Chunk {
 public:
-    //Chunk();
     Chunk(int width, int height, ChunkManager* manager, int startX, int startZ);
     ~Chunk();
     
@@ -45,7 +46,6 @@ private:
     uint8_t* blocks;
     std::shared_ptr<ChunkManager> manager;
     bool needsRender = true;
-    // You can store mesh data here
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
     OGLObject m_mesh;

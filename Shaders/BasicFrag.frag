@@ -14,5 +14,7 @@ uniform sampler2D textureImage;
 
 void main()
 {
-	outputColor = texture(textureImage, textureCoords);
+	float lightintese = 0.8 + dot(normalize(worldNormal),vec3(0.1,1,0.1))*0.2;
+
+	outputColor = texture(textureImage, textureCoords)*lightintese;
 }

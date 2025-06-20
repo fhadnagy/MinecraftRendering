@@ -179,18 +179,51 @@ glm::ivec3 GetFaceOffset(FaceDirection face) {
 Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int startZ)
 	: width(sizeXZ), height(height), startX(startX), startZ(startZ), manager(manager) {
 	blocks = new uint8_t[sizeXZ * sizeXZ * height]; 
+
 	// Empty by default
-	for (int y = 0; y < height; ++y) {
+	if (manager == NULL) {
 		for (int z = 0; z < width; ++z) {
 			for (int x = 0; x < width; ++x) {
-				blocks[Index(x, y, z)] = 0;
-				if (y == 0) {
-				blocks[Index(x, y, z)] = 100;
+				for (int y = 0; y < height; ++y) {
+					blocks[Index(x, y, z)] = 0;
+					if (y == 0) {
+						blocks[Index(x, y, z)] = 100;
+					}
 				}
-
 			}
 		}
 	}
+	else {
+		for (int z = 0; z < width; ++z) {
+			for (int x = 0; x < width; ++x) {
+				int sampleheight = 25 + (30.0 * manager->perlin.noise((double)(startX + x) / 40.0,(double)(startZ + z)/40.0, 0));
+				for (int y = 0; y < height; ++y) {
+					if (y > sampleheight && y < 36) {
+						blocks[Index(x, y, z)] = 179;
+					}else if (y > sampleheight) {
+						blocks[Index(x, y, z)] = 0;
+					}
+					else if (y > sampleheight - 1) {
+						blocks[Index(x, y, z)] = 100;
+					}
+					else if (y > sampleheight - 3) {
+						blocks[Index(x, y, z)] = 242;
+					}
+					else if( y == 0){
+						blocks[Index(x, y, z)] = 225;
+
+					}
+					else {
+						blocks[Index(x, y, z)] = 241;
+
+					}
+
+				}
+			}
+		}
+	}
+	
+	
 }
 
 /*

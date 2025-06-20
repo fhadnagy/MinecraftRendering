@@ -21,7 +21,7 @@ struct pair_hash {
 
 class ChunkManager {
 public:
-    ChunkManager(int chunkWidth, int chunkHeight);
+    ChunkManager(int chunkWidth, int chunkHeight, int seed);
     ~ChunkManager();
 
     bool IsAir(int x, int y, int z);
@@ -45,12 +45,12 @@ public:
 
     glm::vec3 highlightPosition = glm::vec3(-1,-1,-1);
     glm::vec3 placePosition = glm::vec3(-1, -1, -1);
+    PerlinNoise perlin;
 
 private:
     int m_chunkWidth;
     int m_chunkHeight;
-    glm::vec3 viewDir;
-    glm::vec3 headPosition;
+    int seed;
     std::unordered_map<std::pair<int, int>, std::unique_ptr<Chunk>, pair_hash> chunks;
     std::unordered_map<std::pair<int, int>, OGLObject, pair_hash> drawingData;
     

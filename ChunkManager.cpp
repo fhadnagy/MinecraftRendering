@@ -1,7 +1,8 @@
 #include "ChunkManager.h"
 
-ChunkManager::ChunkManager(int chunkWidth, int chunkHeight)
+ChunkManager::ChunkManager(int chunkWidth, int chunkHeight, int seed)
     : m_chunkWidth(chunkWidth), m_chunkHeight(chunkHeight) {
+    perlin = PerlinNoise(seed);
 }
 
 ChunkManager::~ChunkManager()

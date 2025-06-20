@@ -95,6 +95,7 @@
     <ClCompile Include="includes\ObjParser.cpp" />
     <ClCompile Include="includes\ProgramBuilder.cpp" />
     <ClCompile Include="MyAppMiscellaneous.cpp" />
+    <ClCompile Include="PerlinNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chunk.h" />
@@ -106,6 +107,7 @@
     <ClInclude Include="includes\CameraManipulator.h" />
     <ClInclude Include="includes\ObjParser.h" />
     <ClInclude Include="includes\ProgramBuilder.h" />
+    <ClInclude Include="PerlinNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BlockHighLight.vert" />

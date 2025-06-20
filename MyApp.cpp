@@ -9,9 +9,7 @@
 
 CMyApp::CMyApp()
 {
-	chunk = new Chunk(2, 4,nullptr, 0,0);
-	m_manager = new ChunkManager(16, 36);
-	m_manager->SetBlock(2, 2, 2, 1);
+	m_manager = new ChunkManager(16, 128,111111);
 	/*m_manager->PrintAll();
 	m_manager->PrintAll();*/
 	//m_manager->CalculateRayTrace(glm::vec3(0,10,0),glm::vec3(1,-1,1));
@@ -21,13 +19,20 @@ CMyApp::CMyApp()
 CMyApp::~CMyApp()
 {
 	delete m_manager;
-	delete chunk;
 }
 
 void CMyApp::InitGeometry()
 {
-	chunk->UpadteOGLObject();
-	m_chunk = chunk->GetOGLObject();
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			m_manager->SetBlock(i*16+1,0, j*16+1, 241);
+
+		}
+	}
+
+	m_manager->GenerateOGLObjects();
 }
 
 
@@ -85,10 +90,9 @@ void CMyApp::RenderGUI()
 
 	//ImGui::SetNextWindowSize(ImVec2(455, 60), ImGuiCond_FirstUseEver);
 	static float pos[3] = { 0.0f, 0.0f, 0.0f };
-	static int textureIndex = 0;
 
 	ImGui::InputFloat3("Position", pos);
-	ImGui::SliderInt("Texture Index", &textureIndex, 0, 255);
+	ImGui::SliderInt("Texture Index", &m_blockId, 0, 255);
 
 	if (ImGui::Button("Place Block")) {
 		printf("clicked\n");
@@ -96,9 +100,16 @@ void CMyApp::RenderGUI()
 		chunk->Print();
 		chunk->UpadteOGLObject();
 		m_chunk = chunk->GetOGLObject();*/
-		m_manager->SetBlock((int)pos[0], (int)pos[1], (int)pos[2], (uint8_t)textureIndex);
+		m_manager->SetBlock((int)pos[0], (int)pos[1], (int)pos[2], (uint8_t)m_blockId);
 		m_manager->GenerateOGLObjects();
 	}
+
+
+	ImVec2 uv0 = { m_blockId % 16 * (float)TW , m_blockId / 16 * (float)TW };
+	ImVec2 uv1 = { (m_blockId % 16+1) * (float)TW, (m_blockId / 16 + 1) * (float)TW };
+
+	ImGui::Text("Selected Tile:");
+	ImGui::Image((void*)(intptr_t)m_textureAtlasID, ImVec2(64, 64), uv0, uv1);
 
 }
 
@@ -123,8 +134,8 @@ bool CMyApp::Init()
 
 	// Camera
 	m_camera.SetView(
-		glm::vec3(0, 5, 25),// From where we look at the scene - eye
-		glm::vec3(0, 0, 0),	// Which point of the scene we are looking at - at
+		glm::vec3(1, 98, 1),// From where we look at the scene - eye
+		glm::vec3(4, 96, 4),	// Which point of the scene we are looking at - at
 		glm::vec3(0, 1, 0)	// Upwards direction - up
 	);
 	m_fpsCamera.SetCamera(&m_camera);
