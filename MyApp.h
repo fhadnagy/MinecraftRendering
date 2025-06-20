@@ -61,7 +61,7 @@ protected:
 	Camera m_camera;
 	//CameraManipulator m_fpsCamera;
 	FPSCameraManipulator m_fpsCamera;
-	int m_blockId;
+	int m_blockId=237;
 	// OpenGL
 
 	void DrawAxes();
@@ -93,7 +93,7 @@ protected:
 
 	// Geometry variables
 	
-	ChunkManager* m_manager;
+	std::shared_ptr<ChunkManager> m_manager;
 
 	// Geometry initialization and termination
 	void InitGeometry();

@@ -9,7 +9,7 @@
 
 CMyApp::CMyApp()
 {
-	m_manager = new ChunkManager(16, 128,111111);
+	m_manager = std::make_shared<ChunkManager>(16, 128,111111);
 	/*m_manager->PrintAll();
 	m_manager->PrintAll();*/
 	//m_manager->CalculateRayTrace(glm::vec3(0,10,0),glm::vec3(1,-1,1));
@@ -18,7 +18,6 @@ CMyApp::CMyApp()
 
 CMyApp::~CMyApp()
 {
-	delete m_manager;
 }
 
 void CMyApp::InitGeometry()

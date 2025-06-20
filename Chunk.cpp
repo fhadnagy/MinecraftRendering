@@ -176,7 +176,7 @@ glm::ivec3 GetFaceOffset(FaceDirection face) {
 	return { 0, 0, 0 }; // Default/fallback
 }
 
-Chunk::Chunk(int sizeXZ, int height, ChunkManager* manager, int startX, int startZ)
+Chunk::Chunk(int sizeXZ, int height, std::shared_ptr<ChunkManager> manager, int startX, int startZ)
 	: width(sizeXZ), height(height), startX(startX), startZ(startZ), manager(manager) {
 	blocks = new uint8_t[sizeXZ * sizeXZ * height]; 
 
@@ -298,12 +298,16 @@ bool Chunk::IsAir(int x, int y, int z)
 	//printf("Chunk(%d,%d)IsAir %d %d %d\n",startX,startZ, x, y, z);
 
 	if (!InChunk(x,y,z)) {
-		if (manager == NULL) {
-			return true;
+
+		if (auto mgr = manager.lock()) {
+			if (mgr == NULL) {
+				return true;
+			}
+			else {
+				return mgr->IsAir(startX + x, y, startZ + z);
+			}
 		}
-		else{
-			return manager->IsAir(startX + x, y, startZ + z);
-		}
+		
 	}
 
 	return blocks[Index(x,y,z)] == AIR;
@@ -312,12 +316,15 @@ bool Chunk::IsAir(int x, int y, int z)
 int Chunk::BlockAt(int x, int y, int z)
 {
 	if (!InChunk(x, y, z)) {
-		if (manager == NULL) {
-			return AIR;
+		if (auto mgr = manager.lock()) {
+			if (mgr == NULL) {
+				return AIR;
+			}
+			else {
+				return mgr->BlockAt(glm::ivec3(startX + x, y, startZ + z));
+			}
 		}
-		else {
-			return manager->BlockAt(glm::ivec3(startX + x, y, startZ + z));
-		}
+		
 	}
 
 	return blocks[Index(x, y, z)];

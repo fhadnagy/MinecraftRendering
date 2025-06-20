@@ -19,7 +19,7 @@ struct pair_hash {
 
 
 
-class ChunkManager {
+class ChunkManager : public std::enable_shared_from_this<ChunkManager> {
 public:
     ChunkManager(int chunkWidth, int chunkHeight, int seed);
     ~ChunkManager();

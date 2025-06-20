@@ -7,9 +7,9 @@ ChunkManager::ChunkManager(int chunkWidth, int chunkHeight, int seed)
 
 ChunkManager::~ChunkManager()
 {
-    //for (auto& [coord, oglo] : drawingData) {
-        //CleanOGLObject(oglo);
-    //}
+    /*for (auto& [coord, oglo] : drawingData) {
+        CleanOGLObject(oglo);
+    }*/
 }
 
 Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
@@ -19,8 +19,9 @@ Chunk& ChunkManager::GetOrCreateChunk(int chunkX, int chunkZ) {
         return *(it->second);
     }
 
-    // Create and insert new Chunk
-    auto newChunk = std::make_unique<Chunk>(m_chunkWidth, m_chunkHeight, this, chunkX * m_chunkWidth, chunkZ * m_chunkWidth);
+    std::shared_ptr<ChunkManager> self = shared_from_this(); // requires inheriting std::enable_shared_from_this
+
+    auto newChunk = std::make_unique<Chunk>(m_chunkWidth, m_chunkHeight, self, chunkX * m_chunkWidth, chunkZ * m_chunkWidth);
     Chunk& ref = *newChunk;
 
     chunks[key] = std::move(newChunk);

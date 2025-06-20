@@ -23,7 +23,7 @@ class ChunkManager;
 
 class Chunk {
 public:
-    Chunk(int width, int height, ChunkManager* manager, int startX, int startZ);
+    Chunk(int width, int height, std::shared_ptr<ChunkManager> manager, int startX, int startZ);
     ~Chunk();
     
     void GenerateMeshes();
@@ -45,7 +45,7 @@ private:
     int width, height;
     int startX, startZ;
     uint8_t* blocks;
-    std::shared_ptr<ChunkManager> manager;
+    std::weak_ptr<ChunkManager> manager;
     bool needsRender = true;
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
